@@ -9,7 +9,11 @@
 - 月面合唱使用620ms慢起、持续元音漂移；玻璃花园所有泛音有限衰减、没有持续底层，Vocoder额外由输入幅度上升敲击；暖流簧风9ms快起并保持干燥脉冲/八度风琴。源码重新编译Faust 2.89.2，WASM 77,943字节，更新六段同条件试听。
 - 干声Ambient起音15–75ms/音体350–650ms RMS比为月面0.161、玻璃2.342、暖流0.923。长按同一和弦、相同space=0.55且持续合成元音，4.5–5.5s玻璃Ambient/Vocoder RMS约1.18e−12/1.06e−12，其他音色保持非零持续声。新输入音节无需和弦重奏消息也能再次敲击玻璃；不是文字/音素识别。
 - 六组合腕部暗/中/亮频谱改变，中立和独立编译旁通逐样本一致，实际基频最大变化0.0377音分。144组44.1/48/96kHz×模式×预设×腕端点×音区×旋钮边界均有限非零，最高峰0.876997；关闭声部/静音输入为0，统一静音、切换和重奏通过。完整方法与数字见`docs/sound-design.md`和`public/audio/demos/report.json`。
-- TypeScript及Pages子路径正式打包通过。正式主包`index-D-qWWKKt.js`在独立预览服务器的真实AudioWorklet通过六组合发声、长按持续/衰减、明确重奏、右腕暗亮、底色/音高/声部保持、静音和停止释放检查；无console/page错误。玻璃两模式晚段RMS接近0，月面/暖流保持持续声；腕亮/暗质心比1.55–3.29。使用固定合成MediaStream输入、扬声器零增益隔离，未采真实设备。13项核心与试听资源SHA256一致、六段样本11.8秒；证据`output/playwright/release-0929-local-*.json`。增量公网结果待部署后记录。
+- TypeScript及Pages子路径正式打包通过。正式主包`index-D-qWWKKt.js`在独立预览服务器的真实AudioWorklet通过六组合发声、长按持续/衰减、明确重奏、右腕暗亮、底色/音高/声部保持、静音和停止释放检查；无console/page错误。玻璃两模式晚段RMS接近0，月面/暖流保持持续声；腕亮/暗质心比1.55–3.29。使用固定合成MediaStream输入、扬声器零增益隔离，未采真实设备。13项核心与试听资源SHA256一致、六段样本11.8秒；证据`output/playwright/release-0929-local-*.json`。增量公网结果见下一条。
+
+- 增量提交`bc6c833`的[Actions运行36588763546](https://github.com/Jack-YunhaoJia/chora-gesture-choir/actions/runs/36588763546)构建/发布成功；云端48 tests/48 pass/0 fail、Faust编译和全部离线检查通过。公网加载主包`index-D-qWWKKt.js`；实际44.1kHz AudioWorklet六组合检查通过，左腕初始四区/大三和弦正确，玻璃长按晚段RMS约6.94e−26/4.77e−25、重奏恢复，腕亮/暗质心比1.51–3.18。真人设备和艺术听感仍待用户排练。 独立HTTP流式校验13/13核心与试听文件均HTTP200、长度及SHA256与本地一致；浏览器13项并行下载曾240s超时，独立请求中ambient-moon原请求最终225.865s成功，另一次添加查询参数的请求2.732s成功；13项原URL全部一致。记录`output/playwright/release-0929-http-integrity.json`，保留失败与重试边界。
+
+- 本轮额外冷启动复查未通过：合成视频已显示CAMERA LIVE，但模型在120s/180s内仍停在加载；诊断资源仅见识别JS完成，未见识别WASM/模型请求完成，无页面/控制台异常。另一轮音频初始化遇到8s应用超时（此前同版本六组合已发声通过）；六段试听metadata在120s内未全部就绪。原文件独立HTTP均完整匹配，说明不能据此断言文件损坏或功能回归，也不能把本轮公网模型初始化/试听加载记为成功。证据`output/playwright/release-0929-public-final.json`；脚本“Camera passed”日志是未检查返回标志的诊断标签，JSON的`camera.passed=false`才是判定。验收结束已停止合成轨道并关闭浏览器；首次公开版本的模型初始化成功仍只作历史证据。
 
 ## 2026-09-29 GitHub Pages公网发布验收
 
