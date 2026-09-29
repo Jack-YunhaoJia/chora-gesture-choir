@@ -1,3 +1,5 @@
+import type { ChordQuality, GestureChordStyle } from './harmony';
+
 export type SoundMode = 'ambient' | 'vocoder';
 export type SoundPreset = 'moon' | 'glass' | 'warm';
 export type VoiceMask = [boolean, boolean, boolean, boolean];
@@ -38,8 +40,8 @@ export interface AudioMetrics {
   pitchHz: number | null;
 }
 export interface GestureFrame {
-  chordMode?: 'major' | 'minor';
-  chordStyle?: 'open' | 'inversion' | 'seventh' | 'color';
+  chordMode?: ChordQuality;
+  chordStyle?: GestureChordStyle;
   octaveShift?: 0 | -1;
   modifiersPending?: boolean;
   chordModePending?: boolean;

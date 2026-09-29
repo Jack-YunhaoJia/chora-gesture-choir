@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CHORDS, NOTE_NAMES, chordName, frequencies, midiNotes, positionToChord, type GestureChordStyle } from '../src/harmony';
+import { CHORDS, CHORD_QUALITIES, CHORD_QUALITY_NAMES, NOTE_NAMES, chordName, frequencies, midiNotes, positionToChord, type ChordQuality, type GestureChordStyle } from '../src/harmony';
 
 const roots = [0, 2, 4, 5, 7, 9, 11];
 const intervals = [[0, 4, 7, 11], [0, 3, 7, 10], [0, 3, 7, 10], [0, 4, 7, 11], [0, 4, 7, 10], [0, 3, 7, 10], [0, 3, 6, 10]];
@@ -62,13 +62,24 @@ test('all seven position zones use boundary hysteresis and clamp at the edges', 
 });
 
 
-test('free major/minor modes choose qualities independently from scale degree while preserving the root classes', () => {
+test('all four free qualities retain their correct triad and seventh in every key and scale degree', () => {
+  const expected: Record<ChordQuality, { triad: number[]; seventh: number[]; triadLabel: string; seventhLabel: string }> = {
+    diminished: { triad: [0, 3, 6, 12], seventh: [0, 3, 6, 9], triadLabel: 'dim', seventhLabel: 'dim7' },
+    minor: { triad: [0, 3, 7, 12], seventh: [0, 3, 7, 10], triadLabel: 'm', seventhLabel: 'm7' },
+    major: { triad: [0, 4, 7, 12], seventh: [0, 4, 7, 11], triadLabel: '', seventhLabel: 'maj7' },
+    augmented: { triad: [0, 4, 8, 12], seventh: [0, 4, 8, 11], triadLabel: 'aug', seventhLabel: 'augmaj7' },
+  };
+  assert.deepEqual(CHORD_QUALITIES.map(quality => CHORD_QUALITY_NAMES[quality]), ['减和弦', '小和弦', '大和弦', '增和弦']);
   for (let key = 0; key < 12; key += 1) {
     for (let chord = 0; chord < 7; chord += 1) {
-      for (const mode of ['major', 'minor'] as const) {
-        const notes = midiNotes(chord, key, 'triad', { mode });
-        assert.deepEqual(notes.map(n => n - notes[0]), [0, mode === 'major' ? 4 : 3, 7, 12]);
-        assert.equal(notes[0], 48 + key + roots[chord]);
+      for (const mode of CHORD_QUALITIES) {
+        for (const voicing of ['triad', 'seventh'] as const) {
+          const notes = midiNotes(chord, key, voicing, { mode });
+          assert.deepEqual(notes.map(n => n - notes[0]), expected[mode][voicing]);
+          assert.equal(notes[0], 48 + key + roots[chord]);
+          assert.equal(chordName(chord, key, voicing, { mode }),
+            `${NOTE_NAMES[(roots[chord] + key) % 12]}${expected[mode][`${voicing}Label`]}`);
+        }
       }
     }
   }
@@ -77,23 +88,55 @@ test('free major/minor modes choose qualities independently from scale degree wh
   assert.equal(chordName(6, 0, 'seventh', { mode: 'minor' }), 'Bm7');
 });
 
-test('four reference styles have correct free-mode pitch intervals and inversion names', () => {
-  const expected: Record<GestureChordStyle, { major: number[]; minor: number[]; majorName: string; minorName: string }> = {
-    open: { major: [0, 7, 12, 16], minor: [0, 7, 12, 15], majorName: 'C', minorName: 'Cm' },
-    inversion: { major: [4, 7, 12, 16], minor: [3, 7, 12, 15], majorName: 'C/E', minorName: 'Cm/E♭' },
-    seventh: { major: [0, 4, 7, 11], minor: [0, 3, 7, 10], majorName: 'Cmaj7', minorName: 'Cm7' },
-    color: { major: [0, 4, 7, 10], minor: [0, 3, 6, 9], majorName: 'C7', minorName: 'Cdim7' },
+test('open, inverted, seventh and color layouts preserve diminished and augmented fifths', () => {
+  const expected: Record<GestureChordStyle, Record<ChordQuality, { notes: number[]; name: string }>> = {
+    open: {
+      diminished: { notes: [0, 6, 12, 15], name: 'Cdim' },
+      minor: { notes: [0, 7, 12, 15], name: 'Cm' },
+      major: { notes: [0, 7, 12, 16], name: 'C' },
+      augmented: { notes: [0, 8, 12, 16], name: 'Caug' },
+    },
+    inversion: {
+      diminished: { notes: [3, 6, 12, 15], name: 'Cdim/E♭' },
+      minor: { notes: [3, 7, 12, 15], name: 'Cm/E♭' },
+      major: { notes: [4, 7, 12, 16], name: 'C/E' },
+      augmented: { notes: [4, 8, 12, 16], name: 'Caug/E' },
+    },
+    seventh: {
+      diminished: { notes: [0, 3, 6, 9], name: 'Cdim7' },
+      minor: { notes: [0, 3, 7, 10], name: 'Cm7' },
+      major: { notes: [0, 4, 7, 11], name: 'Cmaj7' },
+      augmented: { notes: [0, 4, 8, 11], name: 'Caugmaj7' },
+    },
+    color: {
+      diminished: { notes: [0, 3, 6, 9], name: 'Cdim7' },
+      minor: { notes: [0, 3, 6, 9], name: 'Cdim7' },
+      major: { notes: [0, 4, 7, 10], name: 'C7' },
+      augmented: { notes: [0, 4, 8, 10], name: 'Caug7' },
+    },
   };
   for (const style of Object.keys(expected) as GestureChordStyle[]) {
-    for (const mode of ['major', 'minor'] as const) {
-      assert.deepEqual(midiNotes(0, 0, 'triad', { mode, style }).map(note => note - 48), expected[style][mode]);
-      assert.equal(chordName(0, 0, 'triad', { mode, style }), expected[style][mode === 'major' ? 'majorName' : 'minorName']);
+    for (const mode of CHORD_QUALITIES) {
+      for (const voicing of ['triad', 'seventh'] as const) {
+        assert.deepEqual(midiNotes(0, 0, voicing, { mode, style }).map(note => note - 48), expected[style][mode].notes);
+        assert.equal(chordName(0, 0, voicing, { mode, style }), expected[style][mode].name);
+      }
+      for (let key = 0; key < 12; key += 1) {
+        for (let chord = 0; chord < 7; chord += 1) {
+          const root = 48 + key + roots[chord];
+          const pitches = midiNotes(chord, key, 'triad', { mode, style });
+          assert.deepEqual(pitches.map(note => note - root), expected[style][mode].notes);
+          if (mode === 'diminished' || mode === 'augmented') {
+            assert.ok(!pitches.some(note => (note - root) % 12 === 7), `${mode}/${style} must not introduce a perfect fifth`);
+          }
+        }
+      }
     }
   }
 });
 
 test('thumb lowers all four voices by exactly an octave across modes, styles and keys', () => {
-  for (const mode of ['diatonic', 'major', 'minor'] as const) {
+  for (const mode of ['diatonic', ...CHORD_QUALITIES] as const) {
     for (const style of [undefined, 'open', 'inversion', 'seventh', 'color'] as const) {
       for (let chord = 0; chord < 7; chord += 1) {
         for (let key = 0; key < 12; key += 1) {

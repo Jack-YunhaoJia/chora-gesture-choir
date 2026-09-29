@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { CHORD_QUALITIES, type ChordQuality } from '../src/harmony';
 import type { FingerMask, Handedness, TrackedHand } from '../src/types';
 import { mapTrackedHandLandmarks, mapWristTone, type Landmark } from '../src/vision/gesture';
 import {
   assignHandRoles, CHORD_FINGER_MASKS, chordFromFingers, ChordSignDebouncer,
   SIGN_DWELL_MS, TRANSITION_HOLD_MS, TwoHandGestureInterpreter, type DetectedHands,
   modifiersFromFingers, RightHandModifierDebouncer, ChordModeDebouncer,
+  CHORD_TILT_ZONES, CHORD_TILT_BOUNDARIES_DEGREES, CHORD_TILT_HYSTERESIS_DEGREES, chordQualityFromTilt,
 } from '../src/vision/twohand';
 
 const FIST: FingerMask = [false, false, false, false, false];
@@ -91,22 +93,18 @@ test('wrist lean is independent of finger flex, hand translation and scale', () 
   }
 });
 
-test('right wrist tone spans its range at ±30° while left mode retains the ±12° dead band', () => {
+test('right wrist tone still spans its range at ±30° independently of four left-hand regions', () => {
   const world = keypoints(OPEN);
   for (const [degrees, tone] of [[-60, 0], [-30, 0], [-15, 0.25], [0, 0.5], [15, 0.75], [30, 1], [60, 1]]) {
     const hand = mapTrackedHandLandmarks(projectedRoll(world, degrees, 4 / 3), world, 4 / 3)!;
     assert.ok(Math.abs(mapWristTone(hand.tilt) - tone) < 1e-12);
   }
-  const mode = new ChordModeDebouncer();
-  const tilted = (degrees: number) => mapTrackedHandLandmarks(projectedRoll(world, degrees, 4 / 3), world, 4 / 3)!;
-  mode.update(tilted(0), 0);
-  assert.equal(mode.update(tilted(0), 140).value, 'major');
-  assert.equal(mode.update(tilted(-11), 300).pending, false);
-  assert.equal(mode.update(tilted(-13), 400).pending, true);
-  assert.equal(mode.update(tilted(-13), 540).value, 'minor');
-  assert.equal(mode.update(tilted(11), 700).pending, false);
-  assert.equal(mode.update(tilted(13), 800).pending, true);
-  assert.equal(mode.update(tilted(13), 940).value, 'major');
+  for (const [degrees, expected] of [[-45, 'diminished'], [-20, 'minor'], [0, 'major'], [45, 'augmented']] as const) {
+    const mode = new ChordModeDebouncer();
+    const hand = mapTrackedHandLandmarks(projectedRoll(world, degrees, 4 / 3), world, 4 / 3)!;
+    assert.equal(mode.update(hand, 0).value, undefined);
+    assert.equal(mode.update(hand, 140).value, expected);
+  }
 });
 
 test('invalid tone inputs stay neutral and invalid image aspects use square-pixel fallback', () => {
@@ -135,6 +133,36 @@ test('camera aspect flows through role assignment and publishes independent wris
     assert.ok(Math.abs(frame.brightness - 0.75) < 1e-12);
     assert.ok(Math.abs(mapWristTone(frame.brightness) - 1) < 1e-12);
     assert.deepEqual(frame.rightHand!.landmarks, result.landmarks[1]);
+  }
+});
+
+test('four qualities travel through camera projection and role assignment, and loss rearms at neutral major', () => {
+  for (const aspect of [4 / 3, 16 / 9, 9 / 16]) {
+    for (const [degrees, expected] of [[-45, 'diminished'], [-20, 'minor'], [0, 'major'], [45, 'augmented']] as const) {
+      const result = pair(CHORD_FINGER_MASKS[0], OPEN);
+      const world = result.landmarks;
+      result.worldLandmarks = world;
+      result.landmarks = [projectedRoll([...world[0]], degrees, aspect), projectedRoll([...world[1]], 0, aspect)];
+      const interpreter = new TwoHandGestureInterpreter();
+      const first = interpreter.update(result, 0, aspect);
+      assert.equal(first.gate, false);
+      assert.equal(first.chordMode, undefined);
+      const accepted = interpreter.update(result, 140, aspect);
+      assert.equal(accepted.gate, true);
+      assert.equal(accepted.chordMode, expected);
+      assert.equal(accepted.chordIndex, 0);
+      const missing = interpreter.update({ landmarks: [], handedness: [] }, 141, aspect);
+      assert.equal(missing.gate, false);
+      assert.equal(missing.chordMode, undefined);
+      result.landmarks = [projectedRoll([...world[0]], 0, aspect), projectedRoll([...world[1]], 0, aspect)];
+      const reentry = interpreter.update(result, 142, aspect);
+      assert.equal(reentry.gate, false);
+      assert.equal(reentry.chordMode, undefined);
+      assert.equal(interpreter.update(result, 281, aspect).chordMode, undefined);
+      const neutral = interpreter.update(result, 282, aspect);
+      assert.equal(neutral.gate, true);
+      assert.equal(neutral.chordMode, 'major');
+    }
   }
 });
 
@@ -280,17 +308,40 @@ test('ambiguous, weak or missing handedness is never guessed by landmark-array o
   assert.equal(assignHandRoles({ landmarks: pair().landmarks, handedness: [] }).leftHand, undefined);
 });
 
-test('swapping hand roles immediately resets the instrument then assigns the other hand to chords', () => {
-  const interpreter = new TwoHandGestureInterpreter();
-  interpreter.update(pair(), 0);
-  assert.equal(interpreter.update(pair(), 140).chordIndex, 0);
-  interpreter.setSwapHands(true);
-  const pending = interpreter.update(pair(), 141);
-  assert.equal(pending.gate, false);
-  assert.equal(pending.leftHand?.handedness, 'Right');
-  assert.equal(interpreter.update(pair(), 281).chordIndex, 4);
-  interpreter.setSwapHands(true);
-  assert.equal(interpreter.update(pair(), 282).gate, true);
+test('swapping roles clears accepted harmony and reads each quality from the new chord wrist', () => {
+  for (const aspect of [4 / 3, 9 / 16]) {
+    for (const [degrees, expected] of [[-45, 'diminished'], [-20, 'minor'], [0, 'major'], [45, 'augmented']] as const) {
+      const result = pair();
+      const world = result.landmarks;
+      result.worldLandmarks = world;
+      result.landmarks = [projectedRoll([...world[0]], -45, aspect), projectedRoll([...world[1]], degrees, aspect)];
+      const interpreter = new TwoHandGestureInterpreter();
+      interpreter.update(result, 0, aspect);
+      const original = interpreter.update(result, 140, aspect);
+      assert.equal(original.chordIndex, 0);
+      assert.equal(original.chordMode, 'diminished');
+      interpreter.setSwapHands(true);
+      const pending = interpreter.update(result, 141, aspect);
+      assert.equal(pending.gate, false);
+      assert.equal(pending.chordMode, undefined);
+      assert.equal(pending.chordStyle, undefined);
+      assert.equal(pending.octaveShift, undefined);
+      assert.equal(pending.leftHand?.handedness, 'Right');
+      assert.equal(pending.rightHand?.handedness, 'Left');
+      const swapped = interpreter.update(result, 281, aspect);
+      assert.equal(swapped.gate, true);
+      assert.equal(swapped.chordIndex, 4);
+      assert.equal(swapped.chordMode, expected);
+      assert.equal(swapped.chordStyle, 'open');
+      assert.equal(swapped.octaveShift, 0);
+      assert.equal(mapWristTone(swapped.brightness), 0);
+      interpreter.setSwapHands(true);
+      assert.equal(interpreter.update(result, 282, aspect).gate, true);
+      interpreter.setSwapHands(false);
+      assert.equal(interpreter.update(result, 283, aspect).chordMode, undefined);
+      assert.equal(interpreter.update(result, 423, aspect).chordMode, 'diminished');
+    }
+  }
 });
 
 test('right height and mirrored palm tilt control expression and brightness independently of the left hand', () => {
@@ -352,20 +403,68 @@ test('right style and octave commit as a pair after a stable pose, skipping inte
   assert.deepEqual(debounce.update(final, 470), { value: { chordStyle: 'seventh', octaveShift: -1 }, pending: false });
 });
 
-test('mode tilt has hysteresis plus dwell; returning to the neutral zone cancels unconfirmed excursions', () => {
-  const debounce = new ChordModeDebouncer();
+test('four tilt regions cover the complete roll range in dim/minor/major/aug order with neutral major', () => {
+  const quality = (degrees: number, previous?: ChordQuality) => chordQualityFromTilt((degrees + 60) / 120, previous);
+  assert.deepEqual(CHORD_TILT_ZONES.map(zone => zone.quality), CHORD_QUALITIES);
+  assert.equal(CHORD_TILT_ZONES[0].minDegrees, -60);
+  assert.equal(CHORD_TILT_ZONES.at(-1)?.maxDegrees, 60);
+  assert.deepEqual(CHORD_TILT_BOUNDARIES_DEGREES, [-30, -10, 25]);
+  assert.equal(CHORD_TILT_HYSTERESIS_DEGREES, 3);
+  for (const degrees of [-100, -60, -45, -30.001]) assert.equal(quality(degrees), 'diminished');
+  for (const degrees of [-30, -20, -10.001]) assert.equal(quality(degrees), 'minor');
+  for (const degrees of [-10, 0, 24.999]) assert.equal(quality(degrees), 'major');
+  for (const degrees of [25, 45, 60, 100]) assert.equal(quality(degrees), 'augmented');
+  for (const previous of CHORD_QUALITIES) assert.equal(quality(0, previous), 'major');
+  for (const invalid of [NaN, Infinity, -Infinity]) {
+    assert.equal(chordQualityFromTilt(invalid), 'major');
+    assert.equal(chordQualityFromTilt(invalid, 'minor'), 'minor');
+  }
+});
+
+test('all three tilt boundaries resist noise from either side and require a fresh 140ms stable destination', () => {
   const base = tracked(CHORD_FINGER_MASKS[0]);
-  const hand = (tilt: number) => ({ ...base, tilt });
-  assert.equal(debounce.update(hand(0.5), 0).value, undefined);
-  assert.deepEqual(debounce.update(hand(0.5), 140), { value: 'major', pending: false });
-  assert.equal(debounce.update(hand(0.35), 200).pending, true);
-  assert.deepEqual(debounce.update(hand(0.45), 250), { value: 'major', pending: false });
-  assert.equal(debounce.update(hand(0.35), 400).value, 'major');
-  assert.equal(debounce.update(hand(0.35), 539).value, 'major');
-  assert.deepEqual(debounce.update(hand(0.35), 540), { value: 'minor', pending: false });
-  assert.deepEqual(debounce.update(hand(0.59), 1000), { value: 'minor', pending: false });
-  assert.equal(debounce.update(hand(0.65), 1010).value, 'minor');
-  assert.deepEqual(debounce.update(hand(0.65), 1150), { value: 'major', pending: false });
+  const hand = (degrees: number) => ({ ...base, tilt: (degrees + 60) / 120 });
+  const centers = [-45, -20, 0, 45];
+  for (const [index, boundary] of CHORD_TILT_BOUNDARIES_DEGREES.entries()) {
+    for (const direction of [-1, 1]) {
+      const from = direction === 1 ? index : index + 1;
+      const to = direction === 1 ? index + 1 : index;
+      const debounce = new ChordModeDebouncer();
+      debounce.update(hand(centers[from]), 0);
+      assert.deepEqual(debounce.update(hand(centers[from]), 140), { value: CHORD_QUALITIES[from], pending: false });
+      for (const [offset, timestamp] of [[-2.9, 200], [2.9, 400], [-1, 600], [1, 800]]) {
+        assert.deepEqual(debounce.update(hand(boundary + offset), timestamp), { value: CHORD_QUALITIES[from], pending: false });
+      }
+      const destination = hand(boundary + direction * 3.2);
+      assert.deepEqual(debounce.update(destination, 1000), { value: CHORD_QUALITIES[from], pending: true });
+      // Touching the former region cancels the excursion instead of accruing dwell.
+      assert.deepEqual(debounce.update(hand(boundary), 1100), { value: CHORD_QUALITIES[from], pending: false });
+      assert.equal(debounce.update(destination, 1200).value, CHORD_QUALITIES[from]);
+      assert.equal(debounce.update(destination, 1339).value, CHORD_QUALITIES[from]);
+      assert.deepEqual(debounce.update(destination, 1340), { value: CHORD_QUALITIES[to], pending: false });
+    }
+  }
+});
+
+test('returning upright confirms major from every region; fast sweeps never commit intermediate qualities', () => {
+  const base = tracked(CHORD_FINGER_MASKS[0]);
+  const hand = (degrees: number) => ({ ...base, tilt: (degrees + 60) / 120 });
+  for (const [degrees, expected] of [[-45, 'diminished'], [-20, 'minor'], [45, 'augmented']] as const) {
+    const debounce = new ChordModeDebouncer();
+    debounce.update(hand(degrees), 0);
+    assert.equal(debounce.update(hand(degrees), 140).value, expected);
+    assert.deepEqual(debounce.update(hand(0), 200), { value: expected, pending: true });
+    assert.equal(debounce.update(hand(0), 339).value, expected);
+    assert.deepEqual(debounce.update(hand(0), 340), { value: 'major', pending: false });
+  }
+  const debounce = new ChordModeDebouncer();
+  debounce.update(hand(-45), 0);
+  debounce.update(hand(-45), 140);
+  assert.equal(debounce.update(hand(-20), 200).value, 'diminished');
+  assert.equal(debounce.update(hand(0), 250).value, 'diminished');
+  assert.equal(debounce.update(hand(45), 300).value, 'diminished');
+  assert.equal(debounce.update(hand(45), 439).value, 'diminished');
+  assert.deepEqual(debounce.update(hand(45), 440), { value: 'augmented', pending: false });
 });
 
 test('modifier hand loss, fists and thumb-only reset acceptance so reopening cannot reuse stale state', () => {
@@ -377,12 +476,19 @@ test('modifier hand loss, fists and thumb-only reset acceptance so reopening can
     assert.deepEqual(debounce.update(invalid, 141), { pending: false });
     assert.equal(debounce.update(lowered, 142).value, undefined);
   }
-  const mode = new ChordModeDebouncer();
-  const minor = { ...tracked(CHORD_FINGER_MASKS[0]), tilt: 0.2 };
-  mode.update(minor, 0);
-  assert.equal(mode.update(minor, 140).value, 'minor');
-  assert.deepEqual(mode.update(undefined, 141), { pending: false });
-  assert.equal(mode.update(minor, 142).value, undefined);
+  for (const invalid of [undefined, tracked(FIST)]) {
+    for (const [degrees, expected] of [[-45, 'diminished'], [-20, 'minor'], [45, 'augmented']] as const) {
+      const mode = new ChordModeDebouncer();
+      const tilted = { ...tracked(CHORD_FINGER_MASKS[0]), tilt: (degrees + 60) / 120 };
+      const upright = { ...tilted, tilt: 0.5 };
+      mode.update(tilted, 0);
+      assert.equal(mode.update(tilted, 140).value, expected);
+      assert.deepEqual(mode.update(invalid, 141), { pending: false });
+      assert.deepEqual(mode.update(upright, 142), { value: undefined, pending: true });
+      assert.equal(mode.update(upright, 281).value, undefined);
+      assert.deepEqual(mode.update(upright, 282), { value: 'major', pending: false });
+    }
+  }
 });
 
 test('interpreter publishes only accepted modifiers and mutes thumb-only despite a stable left chord', () => {

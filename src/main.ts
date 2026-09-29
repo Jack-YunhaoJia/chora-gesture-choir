@@ -3,10 +3,11 @@ import { AudioEngine } from './audio/engine';
 import { SOUND_PRESETS, SOUND_PRESET_IDS } from './audio/presets';
 import { HandTracker } from './vision/hand-tracker';
 import { mapWristTone } from './vision/gesture';
-import { CHORDS, GESTURE_STYLE_NAMES, NOTE_NAMES, chordName, frequencies, midiNotes, noteName, positionToChord } from './harmony';
+import { CHORD_TILT_BOUNDARIES_DEGREES } from './vision/twohand';
+import { CHORDS, CHORD_QUALITIES, CHORD_QUALITY_NAMES, GESTURE_STYLE_NAMES, NOTE_NAMES, chordName, frequencies, midiNotes, noteName, positionToChord } from './harmony';
 import { ChoirVisual, drawHand } from './visual';
 import type { GestureFrame, PerformanceState, SoundMode, SoundPreset } from './types';
-import type { ChordVoicing, HarmonyMode, HarmonyOptions } from './harmony';
+import type { ChordQuality, ChordVoicing, HarmonyMode, HarmonyOptions } from './harmony';
 
 const icon = (name:string, size=18) => {
   const paths: Record<string,string> = {
@@ -36,7 +37,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </header>
   <main>
     <section class="intro">
-      <div><p class="eyebrow">AN INSTRUMENT FOR THE IN-BETWEEN</p><h1>让和声，在指间生长<span>。</span></h1><p class="intro-copy">左手选和弦、倾腕切大／小；右手抬高管力度、倾腕塑造音色。</p></div>
+      <div><p class="eyebrow">AN INSTRUMENT FOR THE IN-BETWEEN</p><h1>让和声，在指间生长<span>。</span></h1><p class="intro-copy">左手选根音、倾腕切减／小／大／增；右手抬高管力度、倾腕塑造音色。</p></div>
       <div class="session-badge"><span class="status-dot" id="session-dot"></span><div><span id="session-label">准备好，让声音发生</span><small id="session-detail">耳机就绪 · 无需 MIDI 设备</small></div></div>
     </section>
     <div class="instrument">
@@ -46,7 +47,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <div class="mode-switch" role="group" aria-label="音色模式"><button data-mode="ambient" class="selected" aria-pressed="true">Ambient</button><button data-mode="vocoder" aria-pressed="false">Vocoder</button></div>
         <div class="sound-description"><span class="sound-category" id="sound-category">空灵 · 绵延 · 有呼吸感</span><p id="sound-description">让温暖的和声缓缓展开，像一束穿过薄雾的光。</p></div>
         <div class="preset-list" role="group" aria-label="音色预设">
-          ${SOUND_PRESET_IDS.map((id,i)=>`<button class="preset ${i===0?'selected':''}" data-preset="${id}" aria-pressed="${i===0}"><span class="preset-symbol ${id}"></span><span>${SOUND_PRESETS[id].name}<small>${['VOWEL CHOIR','FM CRYSTAL','WARM REED'][i]}</small></span><span class="preset-dot"></span></button>`).join('')}
+          ${SOUND_PRESET_IDS.map((id,i)=>`<button class="preset ${i===0?'selected':''}" data-preset="${id}" aria-pressed="${i===0}"><span class="preset-symbol ${id}"></span><span>${SOUND_PRESETS[id].name}<small>${['SLOW CHOIR','STRUCK GLASS','REED ORGAN'][i]}</small></span><span class="preset-dot"></span></button>`).join('')}
         </div>
         <div class="preset-actions"><span id="preset-status">原始配方</span><button id="compare-sounds" class="plain-button">同一和弦对比 ↗</button></div>
         <div class="rule"></div>
@@ -65,17 +66,17 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <div class="camera-placeholder" id="camera-placeholder"><div class="two-hands"><div>${handDrawing}<span>左手 · 选择和弦</span></div><div>${handDrawing}<span>右手 · 塑造声音</span></div></div><span id="camera-hint">让双手入镜，用一个和弦开始。</span><button id="camera-overlay-button" class="primary-button">${icon('camera',16)} 开启摄像头</button></div>
           <span class="camera-tag" id="camera-tag"><span class="tiny-dot"></span> CAMERA OFF</span>
           <div class="hand-role left-role" id="left-role">L / CHORD</div><div class="hand-role right-role" id="right-role">R / EXPRESSION</div>
-          <div class="field-center"><span id="current-chord">Cmaj7</span><span id="chord-mood">明亮 · 悬浮</span></div>
+          <div class="field-center"><span id="current-chord">C</span><span id="chord-mood">明亮 · 悬浮</span></div>
           <div class="field-hint" id="field-hint">先听见和弦，再让双手接管。</div>
           <div class="coordinate bottom-right" id="expression-label">EXPRESSION 65%</div>
         </div>
         <div id="connection-status" class="connection-status" role="status" aria-live="polite" hidden></div>
         <button id="enable-sound" class="camera-button enable-sound" hidden>点击启用声音</button>
-        <div class="chord-options"><span class="eyebrow">CHORD HAND / SCALE DEGREE</span><div role="group" class="voicing-switch" aria-label="和弦结构"><button data-voicing="triad" aria-pressed="false">三和弦</button><button data-voicing="seventh" class="selected" aria-pressed="true">七和弦</button></div></div>
-        <div class="harmony-controls"><label for="harmony-mode">和声方式<select id="harmony-mode"><option value="diatonic">顺阶伴奏</option><option value="major">自由 · 固定大和弦</option><option value="minor">自由 · 固定小和弦</option><option value="gesture">自由 · 左腕切大 / 小</option></select></label><label class="check-control"><input id="gesture-voicing" type="checkbox"/>右手选择配器 / 八度</label></div>
-        <div class="wrist-controls"><div class="wrist-control"><label class="check-control"><input id="left-wrist-toggle" type="checkbox" checked/>和弦手腕切大 / 小</label><div class="wrist-control-heading"><span id="left-wrist-name">左腕 · 和弦性质</span><output id="left-wrist-status">等待左手</output></div><div class="wrist-meter" role="meter" aria-label="和弦手腕倾斜" aria-valuemin="-60" aria-valuemax="60" aria-valuenow="0" id="left-wrist-meter"><span class="wrist-center"></span><i id="left-wrist-marker"></i></div><div class="range-labels"><span>画面左倾 · 小和弦</span><span>右倾 · 大和弦</span></div></div><div class="wrist-control"><div class="wrist-control-heading"><label for="wrist-tone" id="right-wrist-name">右腕 · 音色暗亮</label><output id="wrist-tone-value">50% · 原色</output></div><input id="wrist-tone" type="range" min="0" max="100" value="50"/><div class="range-labels"><span>画面左倾 · 暗</span><span>右倾 · 亮</span></div><p id="wrist-tone-hint">可拖动试听，与右腕使用同一声音控制。</p></div></div>
-        <p class="wrist-instruction">手掌朝向镜头，在画面中左右侧倾；不是向前后翻掌。左腕回中保持已确认的大／小，右腕回中恢复原色。</p>
-        <p class="harmony-status" id="harmony-status">顺阶七和弦 · 原音区</p>
+        <div class="chord-options"><span class="eyebrow">CHORD HAND / SCALE DEGREE</span><div role="group" class="voicing-switch" aria-label="和弦结构"><button data-voicing="triad" class="selected" aria-pressed="true">三和弦</button><button data-voicing="seventh" aria-pressed="false">七和弦</button></div></div>
+        <div class="harmony-controls"><label for="harmony-mode">和声方式<select id="harmony-mode"><option value="diatonic">顺阶伴奏</option>${CHORD_QUALITIES.map(quality=>`<option value="${quality}">自由 · 固定${CHORD_QUALITY_NAMES[quality]}</option>`).join('')}<option value="gesture" selected>自由 · 左腕四区</option></select></label><label class="check-control"><input id="gesture-voicing" type="checkbox"/>右手选择配器 / 八度</label></div>
+        <div class="wrist-controls"><div class="wrist-control"><label class="check-control"><input id="left-wrist-toggle" type="checkbox" checked/>和弦手腕四区切换</label><div class="wrist-control-heading"><span id="left-wrist-name">左腕 · 和弦性质</span><output id="left-wrist-status">等待左手</output></div><div class="wrist-meter" role="meter" aria-label="和弦手腕倾斜" aria-valuemin="-60" aria-valuemax="60" aria-valuenow="0" id="left-wrist-meter">${CHORD_TILT_BOUNDARIES_DEGREES.map(degrees=>`<span class="wrist-boundary" style="left:${(degrees+60)/1.2}%"></span>`).join('')}<i id="left-wrist-marker"></i></div><div class="wrist-zone-labels">${CHORD_QUALITIES.map(quality=>`<span data-wrist-quality="${quality}" class="${quality==='major'?'active':''}">${CHORD_QUALITY_NAMES[quality]}<small>${quality==='major'?'回中 · 默认':quality==='diminished'?'大幅左倾':quality==='minor'?'小幅左倾':'右倾'}</small></span>`).join('')}</div></div><div class="wrist-control"><div class="wrist-control-heading"><label for="wrist-tone" id="right-wrist-name">右腕 · 音色暗亮</label><output id="wrist-tone-value">50% · 原色</output></div><input id="wrist-tone" type="range" min="0" max="100" value="50"/><div class="range-labels"><span>画面左倾 · 暗</span><span>右倾 · 亮</span></div><p id="wrist-tone-hint">可拖动试听，与右腕使用同一声音控制。</p></div></div>
+        <p class="wrist-instruction">手掌朝向镜头，在画面中左右侧倾；不是向前后翻掌。左腕由左到右为减、小、大、增，回中恢复大和弦；右腕回中恢复原色。</p>
+        <p class="harmony-status" id="harmony-status">左腕 · 大和弦 · 三和弦 · 原音区</p>
         <div class="chord-strip" role="group" aria-label="和弦选择">${CHORDS.map((c,i)=>`<button class="chord ${i===0?'selected':''}" data-chord="${i}" aria-pressed="${i===0}"><span>${c.degree}</span><strong data-chord-name="${i}">${chordName(i)}</strong><kbd>${i+1}</kbd></button>`).join('')}</div>
         <div class="voices-heading"><span class="eyebrow">VOICING / 四个声部自由组合</span><span id="voice-count">4 / 4 声部</span></div>
         <div class="voice-grid" role="group" aria-label="和声声部">${['根音','三音','五音','色彩音'].map((name,i)=>`<button class="voice selected" data-voice="${i}" aria-pressed="true"><span class="voice-light"></span><span><span data-voice-label="${i}">${name}</span><small data-voice-note="${i}">${noteName(midiNotes(0)[i])}</small></span><kbd>${['A','S','D','F'][i]}</kbd></button>`).join('')}</div>
@@ -86,7 +87,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <div class="tracking-line"><span class="tiny-dot" id="tracking-dot"></span><span id="tracking-label">双手入镜，手掌朝向摄像头</span></div>
         <div class="sign-chart" aria-label="和弦手指型">${CHORDS.map((c,i)=>`<div class="sign-card" data-sign="${i}"><span class="sign-glyph">${['☝','✌','Ⅲ','四','✋','🤘','🤟'][i]}</span><span><strong>${c.degree}</strong><small>${['食指','食指＋中指','再加无名指','四指 · 拇指收起','五指张开','食指＋小指','再加拇指'][i]}</small></span></div>`).join('')}</div>
         <div class="gesture-guide"><div><span class="gesture-glyph">↥</span><p>表情手抬高，加大力度<small>画面中左右侧倾，暗亮随手改变</small></p></div><div><span class="gesture-glyph">○</span><p>握拳，让声音退场<small>任一只手离开画面也会静音</small></p></div></div>
-        <details class="advanced-guide"><summary>进阶：同时控制更多声音</summary><p>启用右手配器后，非拇指 1 / 2 / 3 / 4 指分别选择开放排列、第一转位、七和弦、色彩七和弦；伸出拇指降一个八度。</p><p>自由和声可固定大、小和弦，或交给左腕倾斜切换。色彩七和弦为属七或减七，可能包含调外音。屏幕显示实际和弦与音区。</p></details>
+        <details class="advanced-guide"><summary>进阶：同时控制更多声音</summary><p>启用右手配器后，非拇指 1 / 2 / 3 / 4 指分别选择开放排列、第一转位、七和弦、色彩七和弦；伸出拇指降一个八度。</p><p>左腕由左到右选择减、小、大、增四种性质，回中为大；也可在和声方式中固定任一性质。七和弦与色彩配器会扩展或改变和弦，请以屏幕音名为准。</p></details>
         <button class="swap-hands" id="swap-hands" aria-pressed="false">交换左右手分工 ${icon('arrow',13)}</button>
         <div class="privacy-note"><span class="tiny-dot"></span> 原声演唱 + 合成伴奏 · 影像留在本机</div>
       </aside>
@@ -100,7 +101,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div class="message" id="message" role="status" aria-live="polite" hidden></div>
     <footer><span>${icon('headphones',14)} 建议佩戴耳机，让声音只向你靠近。</span><span>CHORA <span class="footer-cross">✳</span> MADE OF AIR, SHAPED BY YOU.</span><span>空格 静音 <span class="footer-divider">/</span> ESC 停止</span></footer>
   </main>
-  <dialog id="help-dialog"><div class="dialog-heading"><span class="eyebrow">TWO HANDS, ONE INSTRUMENT</span><button class="icon-button" id="close-help" aria-label="关闭指南">${icon('close')}</button></div><h2>像指挥一样，给自己伴奏。</h2><p>这版沿用参考视频的双手分工：一只手选整组和弦，另一只手控制力度与音色。Ambient 可直接伴随自然演唱；Vocoder 则把歌声的频谱带入和声。</p><ol><li><strong>左手选择七个级数。</strong>食指 → I；食指＋中指 → ii；再加无名指 → iii；四指（拇指收起）→ IV；五指 → V；食指＋小指 → vi；食指＋小指＋拇指 → vii。保持完整手型片刻以确认。</li><li><strong>右手控制表情。</strong>抬高增加力度，在画面中左右侧倾，独立扫动音色暗亮。向左偏暗、向右偏亮、回中恢复原色；这与预设明亮度旋钮独立。开启「右手选择配器 / 八度」后，非拇指 1–4 指选择开放排列、第一转位、七和弦和色彩七和弦，拇指展开降八度。任一只手握拳或离开画面，以及右手只伸拇指，都会静音。左右识别与习惯不一致时，用「交换左右手分工」。</li><li><strong>从顺阶到自由。</strong>默认开启和弦手腕大／小切换：画面中向左侧倾为小、向右为大，回中保持确认结果。关闭开关固定当前性质；也可选「顺阶伴奏」按调性决定大、小。右手配器可单独开关，三 / 七和弦按钮恢复固定配器。色彩手型可能带入调外音。</li><li><strong>在演唱中切换音色。</strong>Ambient 只需摄像头；Vocoder 需要点击麦克风按钮连接。切换音色会保留和弦、声部和设备。三和弦的第四声部为高八度根音；七和弦则为七音。</li></ol><div class="guide-tip">先试听：1–7 选和弦，A / S / D / F 开关声部；按住舞台拖动也能演奏。空格静音，Esc 停止。Vocoder 试听使用标注的合成元音信号。</div><p class="guide-footnote">本页不会上传或录制影像与声音，麦克风原声不直通扬声器。优先使用桌面版 Chrome / Edge，双手完整入镜、光线均匀。</p><button class="primary-button" id="got-it">明白了，开始探索 ${icon('arrow',16)}</button></dialog>
+  <dialog id="help-dialog"><div class="dialog-heading"><span class="eyebrow">TWO HANDS, ONE INSTRUMENT</span><button class="icon-button" id="close-help" aria-label="关闭指南">${icon('close')}</button></div><h2>像指挥一样，给自己伴奏。</h2><p>这版沿用参考视频的双手分工：一只手选整组和弦，另一只手控制力度与音色。Ambient 可直接伴随自然演唱；Vocoder 则把歌声的频谱带入和声。</p><ol><li><strong>左手选择七个级数。</strong>食指 → I；食指＋中指 → ii；再加无名指 → iii；四指（拇指收起）→ IV；五指 → V；食指＋小指 → vi；食指＋小指＋拇指 → vii。保持完整手型片刻以确认。</li><li><strong>右手控制表情。</strong>抬高增加力度，在画面中左右侧倾，独立扫动音色暗亮。向左偏暗、向右偏亮、回中恢复原色；这与预设明亮度旋钮独立。开启「右手选择配器 / 八度」后，非拇指 1–4 指选择开放排列、第一转位、七和弦和色彩七和弦，拇指展开降八度。任一只手握拳或离开画面，以及右手只伸拇指，都会静音。左右识别与习惯不一致时，用「交换左右手分工」。</li><li><strong>从顺阶到自由。</strong>默认开启左腕四区：大幅左倾是减和弦、小幅左倾是小和弦、回中是大和弦、右倾是增和弦。分界约为 −30°、−10°、+25°，停稳片刻确认；默认使用大三和弦。关闭开关固定当前性质；也可选「顺阶伴奏」按调性决定性质。右手配器可单独开关，三 / 七和弦按钮恢复固定配器。色彩手型可能带入调外音。</li><li><strong>在演唱中切换音色。</strong>Ambient 只需摄像头；Vocoder 需要点击麦克风按钮连接。切换音色会保留和弦、声部和设备。三和弦的第四声部为高八度根音；七和弦则为七音。</li></ol><div class="guide-tip">先试听：1–7 选和弦，A / S / D / F 开关声部；按住舞台拖动也能演奏。空格静音，Esc 停止。Vocoder 试听使用标注的合成元音信号。</div><p class="guide-footnote">本页不会上传或录制影像与声音，麦克风原声不直通扬声器。优先使用桌面版 Chrome / Edge，双手完整入镜、光线均匀。</p><button class="primary-button" id="got-it">明白了，开始探索 ${icon('arrow',16)}</button></dialog>
   <dialog id="comparison-dialog" aria-labelledby="comparison-title"><div class="dialog-heading"><span class="eyebrow">SAME CHORDS. THREE INSTRUMENTS.</span><button class="icon-button" id="close-comparison" aria-label="关闭音色对比">${icon('close')}</button></div><h2 id="comparison-title">听见音色的区别。</h2><p>同一段 Cmaj7 → Am7 → Fmaj7 → G7，使用相同的明亮度、空间、质感与音量设置。每次只播放一段；演奏声音暂时静音，关闭后恢复。</p><div class="comparison-grid">${SOUND_PRESET_IDS.map(id=>`<section><h3>${SOUND_PRESETS[id].name}</h3><p>${SOUND_PRESETS[id].subtitle}</p>${(['ambient','vocoder'] as const).map(mode=>`<label>${mode==='ambient'?'Ambient · 合成伴奏':'Vocoder · 合成元音输入'}<audio controls preload="none" aria-label="${SOUND_PRESETS[id].name} ${mode} 对比试听" src="${import.meta.env.BASE_URL}audio/demos/${mode}-${id}.wav"></audio></label>`).join('')}</section>`).join('')}</div><p class="guide-footnote">Vocoder 使用同一段合成 /a/、/u/、/e/ 元音，并非真人录音。样本未分别做响度归一化；真实演唱效果请接麦克风试听。</p></dialog>
 `;
 
@@ -110,10 +111,10 @@ const visual = new ChoirVisual($<HTMLCanvasElement>('#resonance'));
 const video = $<HTMLVideoElement>('#camera-video');
 let running = false, starting = false, cameraActive = false, demo = false, muted = false, generation = 0;
 let selectedChord = 0, key = 0;
-let voicing: ChordVoicing = 'seventh';
+let voicing: ChordVoicing = 'triad';
 let harmonyMode: HarmonyMode | 'gesture' = 'gesture';
 let followVoicing = false;
-let gestureHarmony: HarmonyOptions = {};
+let gestureHarmony: Omit<HarmonyOptions, 'mode'> & { mode?: ChordQuality } = {};
 let gestureColor = 0.5;
 let baseBrightness = SOUND_PRESETS.moon.defaults.brightness;
 let presetEdited = false;
@@ -123,7 +124,7 @@ let latestGesture: GestureFrame | undefined;
 let cameraPhase = 'stopped', audioReady = false, audioPending = false, audioAttempt = 0;
 let startupHiddenTimer: number | undefined;
 let lastMetrics = 0, handPresent = false, microphoneWasConnected = false;
-const state: PerformanceState = { frequencies:frequencies(0), voices:[true,true,true,true], expression:.65, ...SOUND_PRESETS.moon.defaults, soundPreset:'moon', wristTone:.5, volume:.55, mode:'ambient', active:false };
+const state: PerformanceState = { frequencies:frequencies(0,0,'triad',{mode:'major'}), voices:[true,true,true,true], expression:.65, ...SOUND_PRESETS.moon.defaults, soundPreset:'moon', wristTone:.5, volume:.55, mode:'ambient', active:false };
 const tracker = new HandTracker(video, handleGesture, (reason:string) => {
   if (running || starting) { void stop(); message(reason,true); }
 }, status => {
@@ -164,7 +165,8 @@ function renderHarmony() {
   $<HTMLInputElement>('#left-wrist-toggle').checked=harmonyMode==='gesture';
   $<HTMLInputElement>('#left-wrist-toggle').disabled=demo;
   const options=harmonyOptions();
-  const modeLabel=harmonyMode==='diatonic'?'顺阶':harmonyMode==='gesture'?`${demo?'试听固定':swapped?'右腕':'左腕'} · ${options.mode==='minor'?'小':'大'}和弦`:`自由${harmonyMode==='minor'?'小':'大'}和弦`;
+  const qualityLabel=options.mode==='diatonic'?'顺阶':CHORD_QUALITY_NAMES[options.mode ?? 'major'];
+  const modeLabel=harmonyMode==='diatonic'?'顺阶':harmonyMode==='gesture'?`${demo?'试听固定':swapped?'右腕':'左腕'} · ${qualityLabel}`:`自由 · ${qualityLabel}`;
   const styleLabel=options.style?GESTURE_STYLE_NAMES[options.style]:voicing==='triad'?'三和弦':'七和弦';
   $('#harmony-status').textContent=`${modeLabel} · ${styleLabel} · ${options.octaveShift===-1?'低八度':'原音区'}${demo&&(followVoicing||harmonyMode==='gesture')?' · 试听中手势设置固定':followVoicing&&!options.style?' · 等待右手配器':''}`;
   document.querySelectorAll<HTMLButtonElement>('[data-voicing]').forEach(el=>{
@@ -179,10 +181,12 @@ function renderWristControls() {
   const right=latestGesture?.rightHand;
   const angle=Math.round(((left?.tilt??.5)-.5)*120);
   const accepted=latestGesture?.chordMode;
-  const modeText=accepted==='minor'?'小和弦':accepted==='major'?'大和弦':'等待确认';
+  const activeQuality=(harmonyOptions().mode==='diatonic'?undefined:harmonyOptions().mode) as ChordQuality|undefined;
+  const modeText=accepted?CHORD_QUALITY_NAMES[accepted]:`等待确认 · ${gestureHarmony.mode?`保留${CHORD_QUALITY_NAMES[gestureHarmony.mode]}`:'默认大和弦'}`;
+  document.querySelectorAll<HTMLElement>('[data-wrist-quality]').forEach(el=>el.classList.toggle('active',el.dataset.wristQuality===activeQuality));
   $('#left-wrist-name').textContent=`${swapped?'右':'左'}腕 · 和弦性质`;
   $('#right-wrist-name').textContent=`${swapped?'左':'右'}腕 · 音色暗亮`;
-  $('#left-wrist-status').textContent=demo?'试听固定':harmonyMode!=='gesture'?'已关闭 · 由和声方式决定':!left?`等待${swapped?'右':'左'}手`:`${angle>0?'+':''}${angle}° · ${modeText}${latestGesture?.chordModePending?' · 切换确认中':''}`;
+  $('#left-wrist-status').textContent=demo?`试听固定 · ${activeQuality?CHORD_QUALITY_NAMES[activeQuality]:'顺阶'}`:harmonyMode!=='gesture'?'已关闭 · 由和声方式决定':!left?`等待${swapped?'右':'左'}手 · ${gestureHarmony.mode?`保留${CHORD_QUALITY_NAMES[gestureHarmony.mode]}`:'默认大和弦'}`:`${angle>0?'+':''}${angle}° · ${modeText}${latestGesture?.chordModePending?' · 切换确认中':''}`;
   $('#left-wrist-marker').style.left=`${Math.max(0,Math.min(100,(left?.tilt??.5)*100))}%`;
   $('#left-wrist-meter').setAttribute('aria-valuenow',String(angle));
   $('#left-wrist-meter').setAttribute('aria-valuetext',$('#left-wrist-status').textContent!);
@@ -195,7 +199,7 @@ function renderWristControls() {
 function selectChord(index:number, repeat=false) {
   const options=harmonyOptions();
   selectedChord = index; state.frequencies = frequencies(index,key,voicing,options);
-  $('#current-chord').textContent = chordName(index,key,voicing,options); $('#chord-mood').textContent = options.mode==='diatonic'&&!options.style?CHORDS[index].mood:options.mode==='minor'?'小和弦 · 自由配和声':'自由配和声';
+  $('#current-chord').textContent = chordName(index,key,voicing,options); $('#chord-mood').textContent = options.mode==='diatonic'&&!options.style?CHORDS[index].mood:`${CHORD_QUALITY_NAMES[options.mode as ChordQuality] ?? '自由和声'} · 自由配和声`;
   document.querySelectorAll<HTMLButtonElement>('[data-chord]').forEach((el,i)=> { el.classList.toggle('selected',i===index); el.setAttribute('aria-pressed',String(i===index)); });
   document.querySelectorAll<HTMLElement>('[data-chord-name]').forEach((el,i)=>el.textContent=chordName(i,key,voicing,options));
   document.querySelectorAll<HTMLElement>('[data-voice-note]').forEach((el,i)=>el.textContent=noteName(midiNotes(index,key,voicing,options)[i]));
@@ -348,7 +352,7 @@ async function start(useDemo:boolean) {
     $('#engine-label').textContent='FAUST · AUDIOWORKLET';
     renderVoices();renderSession();
     if(useDemo&&audioReady)message(state.mode==='vocoder'?'Vocoder 试听使用合成调制信号；连接麦克风后由歌声塑造和声。':'试听已开始。点击和弦与声部，或按住舞台拖动；空格静音。');
-    else if(!useDemo)message(state.mode==='vocoder'?'摄像头已开启。点击麦克风按钮连接人声，再用双手控制和弦。':'摄像头已开启。和弦手先伸食指，表情手张开并抬高。左腕侧倾切大／小，右腕侧倾扫音色；看舞台下方的实时指示。');
+    else if(!useDemo)message(state.mode==='vocoder'?'摄像头已开启。点击麦克风按钮连接人声，再用双手控制和弦。':'摄像头已开启。和弦手先伸食指，表情手张开并抬高。左腕四区切减／小／大／增，回中为大；右腕侧倾扫音色；看舞台下方的实时指示。');
     if(document.hidden)scheduleHiddenStop();
   } catch(error) {
     if(token!==generation)return;
@@ -409,7 +413,7 @@ $('#harmony-mode').addEventListener('change',event=>{
 });
 $('#left-wrist-toggle').addEventListener('change',event=>{
   const enabled=(event.target as HTMLInputElement).checked;
-  harmonyMode=enabled?'gesture':(gestureHarmony.mode==='minor'?'minor':'major');
+  harmonyMode=enabled?'gesture':(gestureHarmony.mode ?? 'major');
   selectChord(selectedChord);
 });
 $('#wrist-tone').addEventListener('input',event=>{

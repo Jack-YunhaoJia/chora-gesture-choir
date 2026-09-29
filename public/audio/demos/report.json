@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T14:12:05.782Z",
+  "generatedAt": "2026-09-29T15:06:53.099Z",
   "sampleRate": 48000,
   "method": "Actual compiled Faust WASM; all presets have identical pitch, controls, volume and source input. Raw WAVs are not individually normalized. Measurements prove DSP differences and bounds, not perceptual quality or real-singer intelligibility.",
   "source": "Deterministic synthetic /a/-/u/-/e/ vowel, 147 Hz fundamental; not human speech or microphone recording.",
@@ -41,346 +41,349 @@
   },
   "variants": {
     "ambient-moon": {
-      "peak": 0.2520667314529419,
-      "rms": 0.08048163654066624,
-      "maxSampleStep": 0.010812533088028431,
-      "spectralCentroidHz": 210.39113072565925,
+      "peak": 0.2939161956310272,
+      "rms": 0.07730787922313162,
+      "maxSampleStep": 0.016767852939665318,
+      "spectralCentroidHz": 254.89536221978273,
       "energyFractions": {
-        "low": 0.8666201181196467,
-        "body": 0.13068430314613355,
-        "presence": 0.002690644533007293,
-        "air": 0.0000046261122553771174
+        "low": 0.7944342996139742,
+        "body": 0.19662441271210135,
+        "presence": 0.00893231885369051,
+        "air": 0.000008716454981548807
       }
     },
     "ambient-glass": {
-      "peak": 0.3208172619342804,
-      "rms": 0.07462987441570036,
-      "maxSampleStep": 0.021253488957881927,
-      "spectralCentroidHz": 295.3226323940676,
+      "peak": 0.15024887025356293,
+      "rms": 0.01536165997822757,
+      "maxSampleStep": 0.006501283496618271,
+      "spectralCentroidHz": 187.6855372623789,
       "energyFractions": {
-        "low": 0.5768854961154506,
-        "body": 0.4216264427088093,
-        "presence": 0.0014866710584392475,
-        "air": 2.5489094619553777e-9
+        "low": 0.9252825326855669,
+        "body": 0.07471590757654153,
+        "presence": 0.0000015365400825143607,
+        "air": 4.7123247373663485e-9
       }
     },
     "ambient-warm": {
-      "peak": 0.28360167145729065,
-      "rms": 0.07437432587774356,
-      "maxSampleStep": 0.057722412049770355,
-      "spectralCentroidHz": 380.82654659082925,
+      "peak": 0.28660649061203003,
+      "rms": 0.08338414595685807,
+      "maxSampleStep": 0.09132476337254047,
+      "spectralCentroidHz": 458.4322141654437,
       "energyFractions": {
-        "low": 0.5799524600514236,
-        "body": 0.36705768141768985,
-        "presence": 0.051384013699003646,
-        "air": 0.001604149076855464
+        "low": 0.5573277717408995,
+        "body": 0.3522859992687812,
+        "presence": 0.08383712963710684,
+        "air": 0.00650360298897701
       }
     },
     "vocoder-moon": {
-      "peak": 0.5407571792602539,
-      "rms": 0.06864250038706522,
-      "maxSampleStep": 0.09851013123989105,
-      "spectralCentroidHz": 635.8809539126513,
+      "peak": 0.49151650071144104,
+      "rms": 0.0742595490849098,
+      "maxSampleStep": 0.0894583910703659,
+      "spectralCentroidHz": 601.8838005953022,
       "energyFractions": {
-        "low": 0.3037449263839381,
-        "body": 0.5736493777288575,
-        "presence": 0.1187066227816903,
-        "air": 0.003896054360152493
+        "low": 0.23045755025422132,
+        "body": 0.66777274974353,
+        "presence": 0.0988289972174136,
+        "air": 0.002938561287712274
       }
     },
     "vocoder-glass": {
-      "peak": 0.37877586483955383,
-      "rms": 0.0684884258090572,
-      "maxSampleStep": 0.06332673132419586,
-      "spectralCentroidHz": 620.2948685955121,
+      "peak": 0.63857102394104,
+      "rms": 0.11514182279333156,
+      "maxSampleStep": 0.103150874376297,
+      "spectralCentroidHz": 558.4737705182744,
       "energyFractions": {
-        "low": 0.09722871716635523,
-        "body": 0.850938917774638,
-        "presence": 0.049613689778482135,
-        "air": 0.0022176518621088593
+        "low": 0.0351716528336305,
+        "body": 0.9025480020784639,
+        "presence": 0.0612016635877192,
+        "air": 0.0010694677032027577
       }
     },
     "vocoder-warm": {
-      "peak": 0.45848602056503296,
-      "rms": 0.06249558080351637,
-      "maxSampleStep": 0.07646412402391434,
-      "spectralCentroidHz": 545.1672255933149,
+      "peak": 0.6062948703765869,
+      "rms": 0.0821119551775723,
+      "maxSampleStep": 0.10739918798208237,
+      "spectralCentroidHz": 705.0937570174517,
       "energyFractions": {
-        "low": 0.4515128760234253,
-        "body": 0.4462775874798594,
-        "presence": 0.09707700642095878,
-        "air": 0.005131201055997861
+        "low": 0.2501950718944585,
+        "body": 0.5631550588704873,
+        "presence": 0.18106573746876392,
+        "air": 0.0055825705017464086
       }
     }
   },
   "pairwiseNormalizedDifference": {
-    "ambient:moon/glass": 0.7046755045526987,
-    "ambient:moon/warm": 1.855321572874207,
-    "ambient:glass/warm": 1.8774211715852402,
-    "vocoder:moon/glass": 1.633562579976287,
-    "vocoder:moon/warm": 1.5430319434197033,
-    "vocoder:glass/warm": 1.2557035488925476
+    "ambient:moon/glass": 1.0183041871431817,
+    "ambient:moon/warm": 1.751218404965758,
+    "ambient:glass/warm": 1.6090790105401251,
+    "vocoder:moon/glass": 1.225543109511529,
+    "vocoder:moon/warm": 1.6278520170928223,
+    "vocoder:glass/warm": 1.624174849663237
   },
   "pairwiseBandEnergyDistance": {
-    "ambient:moon/glass": 0.5818853586047857,
-    "ambient:moon/warm": 0.5733339284703757,
-    "ambient:glass/warm": 0.10913721439560288,
-    "vocoder:moon/glass": 0.5545770847646152,
-    "vocoder:moon/warm": 0.2980045029450622,
-    "vocoder:glass/warm": 0.8093223549882144
+    "ambient:moon/glass": 0.2616962322634174,
+    "ambient:moon/warm": 0.4741678117471662,
+    "ambient:glass/warm": 0.7358640440105836,
+    "vocoder:moon/glass": 0.46955757696972866,
+    "vocoder:moon/warm": 0.20923596197866423,
+    "vocoder:glass/warm": 0.6787935389483929
   },
   "silence": {
     "ambient-moon": {
       "noMicrophone": null,
       "voicesOff": 0,
-      "afterMute": 1.9694629046966338e-13
+      "afterMute": 4.375298719214287e-12
     },
     "ambient-glass": {
       "noMicrophone": null,
       "voicesOff": 0,
-      "afterMute": 5.642279794089109e-15
+      "afterMute": 5.002755532524123e-20
     },
     "ambient-warm": {
       "noMicrophone": null,
       "voicesOff": 0,
-      "afterMute": 5.886399947003824e-15
+      "afterMute": 2.5179223773173054e-15
     },
     "vocoder-moon": {
       "noMicrophone": 0,
       "voicesOff": 0,
-      "afterMute": 7.103998740452374e-15,
-      "afterInputStops": 7.251081994574503e-11
+      "afterMute": 3.202710327336694e-14,
+      "afterInputStops": 8.092964677192121e-9
     },
     "vocoder-glass": {
       "noMicrophone": 0,
       "voicesOff": 0,
-      "afterMute": 9.463359730827858e-16,
-      "afterInputStops": 1.5283327138864425e-12
+      "afterMute": 5.750275257837836e-16,
+      "afterInputStops": 6.473244575144706e-13
     },
     "vocoder-warm": {
       "noMicrophone": 0,
       "voicesOff": 0,
-      "afterMute": 8.576208036162647e-16,
-      "afterInputStops": 1.383493369258315e-12
+      "afterMute": 2.885186906512427e-16,
+      "afterInputStops": 4.51608658005965e-13
     }
   },
   "extremes": {
     "ambient-moon-0": {
-      "peak": 0.42860499024391174,
-      "rms": 0.14577600269919888,
-      "maxSampleStep": 0.02831473294645548
+      "peak": 0.47722387313842773,
+      "rms": 0.11038271742530464,
+      "maxSampleStep": 0.026785582304000854
     },
     "ambient-moon-1": {
-      "peak": 0.48603472113609314,
-      "rms": 0.14058183839959507,
-      "maxSampleStep": 0.04467233456671238
+      "peak": 0.6762039661407471,
+      "rms": 0.18344537206276387,
+      "maxSampleStep": 0.08148324862122536
     },
     "ambient-glass-0": {
-      "peak": 0.664181113243103,
-      "rms": 0.14102526176589616,
-      "maxSampleStep": 0.0750754177570343
+      "peak": 0.6867382526397705,
+      "rms": 0.06442638353948267,
+      "maxSampleStep": 0.08068880252540112
     },
     "ambient-glass-1": {
-      "peak": 0.666366696357727,
-      "rms": 0.16038637098418349,
-      "maxSampleStep": 0.11119268648326397
+      "peak": 0.7558689117431641,
+      "rms": 0.09161623203741881,
+      "maxSampleStep": 0.11154995858669281
     },
     "ambient-warm-0": {
-      "peak": 0.26496461033821106,
-      "rms": 0.0832338764078313,
-      "maxSampleStep": 0.03171915095299482
+      "peak": 0.3664701581001282,
+      "rms": 0.12377552623466422,
+      "maxSampleStep": 0.056412698701024055
     },
     "ambient-warm-1": {
-      "peak": 0.5320372581481934,
-      "rms": 0.14668578512832423,
-      "maxSampleStep": 0.1997658610343933
+      "peak": 0.45893189311027527,
+      "rms": 0.1575243606235503,
+      "maxSampleStep": 0.28129182010889053
     },
     "vocoder-moon-0": {
-      "peak": 0.7733150124549866,
-      "rms": 0.1492490162213691,
-      "maxSampleStep": 0.13417427241802216
+      "peak": 0.7852288484573364,
+      "rms": 0.1727147578721157,
+      "maxSampleStep": 0.1264305654913187
     },
     "vocoder-moon-1": {
-      "peak": 0.8175699710845947,
-      "rms": 0.1640652733596047,
-      "maxSampleStep": 0.2669076547026634
+      "peak": 0.8264098763465881,
+      "rms": 0.18972185408993544,
+      "maxSampleStep": 0.22340814769268036
     },
     "vocoder-glass-0": {
-      "peak": 0.5551587343215942,
-      "rms": 0.11453192877316702,
-      "maxSampleStep": 0.08149364404380322
+      "peak": 0.8607267141342163,
+      "rms": 0.217413518800075,
+      "maxSampleStep": 0.20919961109757423
     },
     "vocoder-glass-1": {
-      "peak": 0.7763264775276184,
-      "rms": 0.18847345555037898,
-      "maxSampleStep": 0.1561493929475546
+      "peak": 0.8855243921279907,
+      "rms": 0.2662344225398832,
+      "maxSampleStep": 0.3417403921484947
     },
     "vocoder-warm-0": {
-      "peak": 0.7220674753189087,
-      "rms": 0.15015701514199967,
-      "maxSampleStep": 0.09835466742515564
+      "peak": 0.7517341375350952,
+      "rms": 0.15339244007701472,
+      "maxSampleStep": 0.08559104800224304
     },
     "vocoder-warm-1": {
-      "peak": 0.7334446907043457,
-      "rms": 0.14702589199296076,
-      "maxSampleStep": 0.16917109861969948
+      "peak": 0.850655734539032,
+      "rms": 0.19900893934675223,
+      "maxSampleStep": 0.268353458493948
     }
   },
   "transitions": {
-    "peak": 0.5402671694755554,
-    "rms": 0.08935635438150592,
-    "maxSampleStep": 0.09823645651340485,
-    "retriggerNormalizedDifference": 0.42425277549090307
+    "peak": 0.49092069268226624,
+    "rms": 0.09021159360245612,
+    "maxSampleStep": 0.09780667722225189,
+    "retriggerNormalizedDifference": 1.1842363652468924
   },
   "sampleRates": {
     "44100": {
       "ambient-moon": {
-        "peak": 0.25547510385513306,
-        "rms": 0.08565513058286404,
-        "maxSampleStep": 0.010769974440336227
+        "peak": 0.29978981614112854,
+        "rms": 0.08225494807405376,
+        "maxSampleStep": 0.014069614000618458
       },
       "ambient-glass": {
-        "peak": 0.4258938133716583,
-        "rms": 0.0921279828800762,
-        "maxSampleStep": 0.025209322571754456
+        "peak": 0.40661874413490295,
+        "rms": 0.05912793656702675,
+        "maxSampleStep": 0.025922223925590515
       },
       "ambient-warm": {
-        "peak": 0.26245373487472534,
-        "rms": 0.07361175381185678,
-        "maxSampleStep": 0.057372305542230606
+        "peak": 0.27437230944633484,
+        "rms": 0.08234803766985066,
+        "maxSampleStep": 0.0964774377644062
       },
       "vocoder-moon": {
-        "peak": 0.47372058033943176,
-        "rms": 0.09042398149370753,
-        "maxSampleStep": 0.1078094094991684
+        "peak": 0.3571642339229584,
+        "rms": 0.07348355937733271,
+        "maxSampleStep": 0.08238657377660275
       },
       "vocoder-glass": {
-        "peak": 0.37985116243362427,
-        "rms": 0.09323486720140614,
-        "maxSampleStep": 0.07892636582255363
+        "peak": 0.6082375049591064,
+        "rms": 0.09475894025554274,
+        "maxSampleStep": 0.06868641544133425
       },
       "vocoder-warm": {
-        "peak": 0.5076711773872375,
-        "rms": 0.11403671825224419,
-        "maxSampleStep": 0.08767542988061905
+        "peak": 0.5816235542297363,
+        "rms": 0.12700684279858138,
+        "maxSampleStep": 0.13232098147273064
       }
     },
     "96000": {
       "ambient-moon": {
-        "peak": 0.24779777228832245,
-        "rms": 0.07402772135386079,
-        "maxSampleStep": 0.0047841668128967285
+        "peak": 0.2847214341163635,
+        "rms": 0.07033712983913146,
+        "maxSampleStep": 0.006549028679728508
       },
       "ambient-glass": {
-        "peak": 0.4218651056289673,
-        "rms": 0.08778836413968007,
-        "maxSampleStep": 0.010939300060272217
+        "peak": 0.40262576937675476,
+        "rms": 0.057516936599534024,
+        "maxSampleStep": 0.010808035731315613
       },
       "ambient-warm": {
-        "peak": 0.2559862732887268,
-        "rms": 0.07034291457858376,
-        "maxSampleStep": 0.026906102895736694
+        "peak": 0.2708286643028259,
+        "rms": 0.08127505159038682,
+        "maxSampleStep": 0.048924174159765244
       },
       "vocoder-moon": {
-        "peak": 0.43727895617485046,
-        "rms": 0.08676910858805148,
-        "maxSampleStep": 0.054773151874542236
+        "peak": 0.34615805745124817,
+        "rms": 0.0678015476946257,
+        "maxSampleStep": 0.03808206133544445
       },
       "vocoder-glass": {
-        "peak": 0.36476436257362366,
-        "rms": 0.09029513650304315,
-        "maxSampleStep": 0.03917201654985547
+        "peak": 0.6037020683288574,
+        "rms": 0.09383020626884923,
+        "maxSampleStep": 0.032735200598835945
       },
       "vocoder-warm": {
-        "peak": 0.4841894209384918,
-        "rms": 0.10943185680876338,
-        "maxSampleStep": 0.04546436108648777
+        "peak": 0.5741158723831177,
+        "rms": 0.1258599277185664,
+        "maxSampleStep": 0.06304003484547138
       }
     }
   },
   "textureControl": {
-    "ambient-moon": 0.4664378435424635,
-    "ambient-glass": 0.5078035606087665,
-    "ambient-warm": 0.6196833533476824,
-    "vocoder-moon": 1.476368883181451,
-    "vocoder-glass": 0.9496919528726627,
-    "vocoder-warm": 0.7288820496356047
+    "ambient-moon": 0.8233749944615973,
+    "ambient-glass": 0.7344760627278175,
+    "ambient-warm": 0.7329723822784684,
+    "vocoder-moon": 1.4590068776126524,
+    "vocoder-glass": 0.33017655358799874,
+    "vocoder-warm": 0.8766750964308776
   },
   "articulation": {
     "moon": {
-      "earlyRms": 0.019173605506594353,
-      "bodyRms": 0.09042591931759676,
-      "lateRms": 0.07943235943958502,
-      "earlyToBodyRatio": 0.21203661130889045
+      "earlyRms": 0.011767550968580908,
+      "bodyRms": 0.07315966818683527,
+      "lateRms": 0.11257815542723189,
+      "earlyToBodyRatio": 0.16084751694784782,
+      "lateToAttackDb": 8.65239908734804
     },
     "glass": {
-      "earlyRms": 0.12720311570338333,
-      "bodyRms": 0.08570852735515559,
-      "lateRms": 0.06700590784517681,
-      "earlyToBodyRatio": 1.484136055404197
+      "earlyRms": 0.17592935700457996,
+      "bodyRms": 0.07512608726801064,
+      "lateRms": 0,
+      "earlyToBodyRatio": 2.341787831661669,
+      "lateToAttackDb": -383.48641515807253
     },
     "warm": {
-      "earlyRms": 0.05123857671524884,
-      "bodyRms": 0.08022585831042015,
-      "lateRms": 0.08001009320024326,
-      "earlyToBodyRatio": 0.6386790717400616
+      "earlyRms": 0.08212938539243769,
+      "bodyRms": 0.08899502455698917,
+      "lateRms": 0.09109001849460467,
+      "earlyToBodyRatio": 0.9228536741382102,
+      "lateToAttackDb": 0.4960603289080888
     }
   },
   "wristTone": {
     "ambient-moon": {
       "dark": {
-        "peak": 0.2942585349082947,
-        "rms": 0.09554884219861412,
-        "maxSampleStep": 0.008013458922505379,
-        "spectralCentroidHz": 182.56402701745083,
+        "peak": 0.3198489546775818,
+        "rms": 0.09059169306059531,
+        "maxSampleStep": 0.008456792682409286,
+        "spectralCentroidHz": 180.70720841994793,
         "energyFractions": {
-          "low": 0.9350619320899699,
-          "body": 0.06493167066241694,
-          "presence": 0.00000579841859019155,
-          "air": 4.054015163737761e-9
+          "low": 0.9478806731776459,
+          "body": 0.05211340993549103,
+          "presence": 0.0000054234780247621625,
+          "air": 4.133779019516811e-9
         }
       },
       "neutral": {
-        "peak": 0.2583354413509369,
-        "rms": 0.08157170197125962,
-        "maxSampleStep": 0.010851908475160599,
-        "spectralCentroidHz": 206.33717021533067,
+        "peak": 0.2829110622406006,
+        "rms": 0.07662978068806156,
+        "maxSampleStep": 0.011930868960916996,
+        "spectralCentroidHz": 199.9529923243559,
         "energyFractions": {
-          "low": 0.8794354082693139,
-          "body": 0.11757244298873645,
-          "presence": 0.0029871778365965916,
-          "air": 0.0000045454868377572055
+          "low": 0.9069685474457249,
+          "body": 0.09019054084134322,
+          "presence": 0.0028373324024881692,
+          "air": 0.0000032684507370826794
         }
       },
       "bright": {
-        "peak": 0.25216764211654663,
-        "rms": 0.07214111958311298,
-        "maxSampleStep": 0.014156125485897064,
-        "spectralCentroidHz": 248.93467072530495,
+        "peak": 0.29572468996047974,
+        "rms": 0.06671957284650572,
+        "maxSampleStep": 0.014473442686721683,
+        "spectralCentroidHz": 237.3385937484298,
         "energyFractions": {
-          "low": 0.7904227183837288,
-          "body": 0.20080907857567992,
-          "presence": 0.008753964501884003,
-          "air": 0.000013961369920710995
+          "low": 0.8358634605047507,
+          "body": 0.15558975825375743,
+          "presence": 0.008536057090924067,
+          "air": 0.000010320295892578468
         }
       },
-      "darkToBrightNormalizedDifference": 1.4175942230557692,
+      "darkToBrightNormalizedDifference": 1.4019348703768593,
       "neutralBypassNormalizedDifference": 0,
-      "darkToNeutralDb": 1.3737181015086029,
-      "brightToNeutralDb": -1.0671329167128303,
-      "brightToDarkHighBandRatio": 1511.0671722452448,
+      "darkToNeutralDb": 1.453815872106019,
+      "brightToNeutralDb": -1.2028865086549358,
+      "brightToDarkHighBandRatio": 1574.6110252140677,
       "fundamentalHz": {
-        "dark": 219.95616493051455,
-        "neutral": 219.9558979637472,
-        "bright": 219.95583787751963
+        "dark": 220.03898343874909,
+        "neutral": 220.03979138321893,
+        "bright": 220.04043350986052
       },
-      "maxPitchShiftCents": 0.0021012470289652834,
+      "maxPitchShiftCents": 0.006356775450090932,
       "sweep": {
-        "peak": 0.29411181807518005,
-        "rms": 0.08060595492428126,
-        "maxSampleStep": 0.014088679105043411
+        "peak": 0.30932313203811646,
+        "rms": 0.074552330338611,
+        "maxSampleStep": 0.021967221051454544
       },
-      "returnToNeutralNormalizedDifference": 0.0003556864172851853,
+      "returnToNeutralNormalizedDifference": 0.00037142411259144406,
       "silence": {
         "0": {
           "voicesOff": 0,
@@ -394,58 +397,58 @@
     },
     "ambient-glass": {
       "dark": {
-        "peak": 0.26720064878463745,
-        "rms": 0.08095107117186189,
-        "maxSampleStep": 0.009531080722808838,
-        "spectralCentroidHz": 206.83123594104774,
+        "peak": 0.4160095453262329,
+        "rms": 0.09056137100380374,
+        "maxSampleStep": 0.014998551458120346,
+        "spectralCentroidHz": 234.4889486468674,
         "energyFractions": {
-          "low": 0.795235871319599,
-          "body": 0.20475845038505217,
-          "presence": 0.000004889648057251843,
-          "air": 3.258071092374672e-9
+          "low": 0.6135822410103088,
+          "body": 0.38639814159638464,
+          "presence": 0.00001603354166419959,
+          "air": 2.600902865212835e-9
         }
       },
       "neutral": {
-        "peak": 0.3287939727306366,
-        "rms": 0.07797507221444819,
-        "maxSampleStep": 0.02059050463140011,
-        "spectralCentroidHz": 289.55214736591927,
+        "peak": 0.44090378284454346,
+        "rms": 0.0969789155535686,
+        "maxSampleStep": 0.026234015822410583,
+        "spectralCentroidHz": 329.48320906460077,
         "energyFractions": {
-          "low": 0.5656606133580151,
-          "body": 0.4326494224103945,
-          "presence": 0.0016879108524299555,
-          "air": 2.389552553414303e-9
+          "low": 0.3437762823592963,
+          "body": 0.6537242845405447,
+          "presence": 0.002494021477438421,
+          "air": 1.6592917882432058e-9
         }
       },
       "bright": {
-        "peak": 0.37129902839660645,
-        "rms": 0.07857741967844238,
-        "maxSampleStep": 0.03009887784719467,
-        "spectralCentroidHz": 359.39187375589836,
+        "peak": 0.4675447940826416,
+        "rms": 0.10447747483730793,
+        "maxSampleStep": 0.03525253897532821,
+        "spectralCentroidHz": 382.19091727960495,
         "energyFractions": {
-          "low": 0.3846241918963632,
-          "body": 0.6117718678264121,
-          "presence": 0.0036004056225667743,
-          "air": 1.6072219027308166e-9
+          "low": 0.2023512355405528,
+          "body": 0.7929990291086045,
+          "presence": 0.004640954063897918,
+          "air": 1.0167782552271064e-9
         }
       },
-      "darkToBrightNormalizedDifference": 1.5324713258725062,
+      "darkToBrightNormalizedDifference": 1.6205495071330223,
       "neutralBypassNormalizedDifference": 0,
-      "darkToNeutralDb": 0.3253362843850569,
-      "brightToNeutralDb": 0.06683955458645952,
-      "brightToDarkHighBandRatio": 735.842285821059,
+      "darkToNeutralDb": -0.594686694886799,
+      "brightToNeutralDb": 0.6469068800261525,
+      "brightToDarkHighBandRatio": 289.4059504190126,
       "fundamentalHz": {
-        "dark": 220.01577637833586,
-        "neutral": 220.01570266793405,
-        "bright": 220.0156933314571
+        "dark": 220.0216402167493,
+        "neutral": 220.02174959745875,
+        "bright": 220.02183036546495
       },
-      "maxPitchShiftCents": 0.0005800037654164048,
+      "maxPitchShiftCents": 0.0008606588027637,
       "sweep": {
-        "peak": 0.4570654630661011,
-        "rms": 0.08335949944325753,
-        "maxSampleStep": 0.025181680917739868
+        "peak": 0.5130207538604736,
+        "rms": 0.06712874837234244,
+        "maxSampleStep": 0.03341534361243248
       },
-      "returnToNeutralNormalizedDifference": 0.00036287563656874327,
+      "returnToNeutralNormalizedDifference": 0.0003636833704695105,
       "silence": {
         "0": {
           "voicesOff": 0,
@@ -459,58 +462,58 @@
     },
     "ambient-warm": {
       "dark": {
-        "peak": 0.2622239589691162,
-        "rms": 0.08093777528532567,
-        "maxSampleStep": 0.00793802086263895,
-        "spectralCentroidHz": 199.58542323439084,
+        "peak": 0.28975147008895874,
+        "rms": 0.08672829580757742,
+        "maxSampleStep": 0.0086369588971138,
+        "spectralCentroidHz": 197.22793853146325,
         "energyFractions": {
-          "low": 0.83114937314842,
-          "body": 0.16876559534928232,
-          "presence": 0.00008412565759111744,
-          "air": 6.91201643506557e-8
+          "low": 0.850417554934947,
+          "body": 0.14942210711439943,
+          "presence": 0.0001592170401506026,
+          "air": 8.305198951783786e-8
         }
       },
       "neutral": {
-        "peak": 0.28867125511169434,
-        "rms": 0.07979537072213025,
-        "maxSampleStep": 0.0626575592905283,
-        "spectralCentroidHz": 377.70289689351216,
+        "peak": 0.28567132353782654,
+        "rms": 0.08543532985785228,
+        "maxSampleStep": 0.09216899424791336,
+        "spectralCentroidHz": 454.49054132324017,
         "energyFractions": {
-          "low": 0.5852458244459868,
-          "body": 0.3594784035379414,
-          "presence": 0.0536627404212372,
-          "air": 0.0016112460085500155
+          "low": 0.5924402455834802,
+          "body": 0.30860412096020945,
+          "presence": 0.09180802557472854,
+          "air": 0.007096306146796408
         }
       },
       "bright": {
-        "peak": 0.40682756900787354,
-        "rms": 0.08308193073397883,
-        "maxSampleStep": 0.0870380699634552,
-        "spectralCentroidHz": 554.2861967183253,
+        "peak": 0.41534191370010376,
+        "rms": 0.08969783746494282,
+        "maxSampleStep": 0.12563896551728249,
+        "spectralCentroidHz": 713.2235614750621,
         "energyFractions": {
-          "low": 0.3799204339670049,
-          "body": 0.5036510032879761,
-          "presence": 0.11289999491273298,
-          "air": 0.0035249345522256293
+          "low": 0.3754722306696909,
+          "body": 0.42066371341048947,
+          "presence": 0.18862952338411224,
+          "air": 0.015123353661363532
         }
       },
-      "darkToBrightNormalizedDifference": 1.5052893257223245,
+      "darkToBrightNormalizedDifference": 1.4886096151216368,
       "neutralBypassNormalizedDifference": 0,
-      "darkToNeutralDb": 0.12347132245227918,
-      "brightToNeutralDb": 0.35057767501571746,
-      "brightToDarkHighBandRatio": 1382.8046414362952,
+      "darkToNeutralDb": 0.13046624278864322,
+      "brightToNeutralDb": 0.4228894435097612,
+      "brightToDarkHighBandRatio": 1279.0505912969256,
       "fundamentalHz": {
-        "dark": 220.0106855421868,
-        "neutral": 220.01068443670033,
-        "bright": 220.01068566702477
+        "dark": 220.02130902504084,
+        "neutral": 220.0215796795902,
+        "bright": 220.02178555022752
       },
-      "maxPitchShiftCents": 0.000009681255242679244,
+      "maxPitchShiftCents": 0.0021296395575136494,
       "sweep": {
-        "peak": 0.4067840278148651,
-        "rms": 0.07940065845489655,
-        "maxSampleStep": 0.07820253260433674
+        "peak": 0.4594583809375763,
+        "rms": 0.09100332477154019,
+        "maxSampleStep": 0.13118182122707367
       },
-      "returnToNeutralNormalizedDifference": 0.0007190850884643845,
+      "returnToNeutralNormalizedDifference": 0.0004394613574973712,
       "silence": {
         "0": {
           "voicesOff": 0,
@@ -524,58 +527,58 @@
     },
     "vocoder-moon": {
       "dark": {
-        "peak": 0.393561989068985,
-        "rms": 0.05959559569350655,
-        "maxSampleStep": 0.012236863374710083,
-        "spectralCentroidHz": 231.36650385889214,
+        "peak": 0.15884408354759216,
+        "rms": 0.025006101633857934,
+        "maxSampleStep": 0.005732078105211258,
+        "spectralCentroidHz": 272.9970825202622,
         "energyFractions": {
-          "low": 0.7378350834150029,
-          "body": 0.26182623930966914,
-          "presence": 0.00033825777952204637,
-          "air": 8.909723484714236e-8
+          "low": 0.49602364474811006,
+          "body": 0.5036919204170411,
+          "presence": 0.00028426531296087067,
+          "air": 9.47394484890693e-8
         }
       },
       "neutral": {
-        "peak": 0.5670732855796814,
-        "rms": 0.07159406713253785,
-        "maxSampleStep": 0.09978686273097992,
-        "spectralCentroidHz": 626.9550096313432,
+        "peak": 0.27253255248069763,
+        "rms": 0.03664186053769792,
+        "maxSampleStep": 0.04150349646806717,
+        "spectralCentroidHz": 567.7379742294696,
         "energyFractions": {
-          "low": 0.31588361816717525,
-          "body": 0.5505170452049852,
-          "presence": 0.12984771142314802,
-          "air": 0.003747266831302915
+          "low": 0.15955695489026897,
+          "body": 0.7514299688619627,
+          "presence": 0.08596232020867037,
+          "air": 0.003050223025081929
         }
       },
       "bright": {
-        "peak": 0.5989247560501099,
-        "rms": 0.0841163936444738,
-        "maxSampleStep": 0.14214713871479034,
-        "spectralCentroidHz": 810.3165006162195,
+        "peak": 0.2898496091365814,
+        "rms": 0.04545430322863095,
+        "maxSampleStep": 0.059142403304576874,
+        "spectralCentroidHz": 680.9582116576513,
         "energyFractions": {
-          "low": 0.16585949858184867,
-          "body": 0.6286044721873338,
-          "presence": 0.1996325593483217,
-          "air": 0.005894369560300413
+          "low": 0.07765882187647899,
+          "body": 0.7889672710866318,
+          "presence": 0.1286686151999155,
+          "air": 0.004704369766635446
         }
       },
-      "darkToBrightNormalizedDifference": 1.5821901826365543,
+      "darkToBrightNormalizedDifference": 1.686204898405778,
       "neutralBypassNormalizedDifference": 0,
-      "darkToNeutralDb": -1.5932573891262636,
-      "brightToNeutralDb": 1.4000722022488552,
-      "brightToDarkHighBandRatio": 607.4444395013458,
+      "darkToNeutralDb": -3.318630508840882,
+      "brightToNeutralDb": 1.8719497482305003,
+      "brightToDarkHighBandRatio": 469.0285567065149,
       "fundamentalHz": {
-        "dark": 220.1197821245218,
-        "neutral": 220.121045026751,
-        "bright": 220.12094110383688
+        "dark": 220.07219289296077,
+        "neutral": 220.07593379921937,
+        "bright": 220.07839055270404
       },
-      "maxPitchShiftCents": 0.009932651426268617,
+      "maxPitchShiftCents": 0.029428203355399255,
       "sweep": {
-        "peak": 0.5690743923187256,
-        "rms": 0.07467557515154537,
-        "maxSampleStep": 0.12399256229400635
+        "peak": 0.5050707459449768,
+        "rms": 0.0727611313953688,
+        "maxSampleStep": 0.09456941485404968
       },
-      "returnToNeutralNormalizedDifference": 0.0003610298179657332,
+      "returnToNeutralNormalizedDifference": 0.00034986519537078193,
       "silence": {
         "0": {
           "voicesOff": 0,
@@ -589,58 +592,58 @@
     },
     "vocoder-glass": {
       "dark": {
-        "peak": 0.2810593545436859,
-        "rms": 0.04888190463846221,
-        "maxSampleStep": 0.010982513427734375,
-        "spectralCentroidHz": 303.544025152683,
+        "peak": 0.562075674533844,
+        "rms": 0.10278856808665791,
+        "maxSampleStep": 0.03471853584051132,
+        "spectralCentroidHz": 332.3681084318181,
         "energyFractions": {
-          "low": 0.5286677070062014,
-          "body": 0.47096608708703197,
-          "presence": 0.0003653213439153154,
-          "air": 9.979470499114859e-8
+          "low": 0.15700436898338177,
+          "body": 0.8425480806092966,
+          "presence": 0.00043441661317112273,
+          "air": 3.106896290976238e-8
         }
       },
       "neutral": {
-        "peak": 0.4041000306606293,
-        "rms": 0.07170581877637736,
-        "maxSampleStep": 0.0711352489888668,
-        "spectralCentroidHz": 608.3219846332344,
+        "peak": 0.7618505358695984,
+        "rms": 0.14447207055831762,
+        "maxSampleStep": 0.07295921444892883,
+        "spectralCentroidHz": 506.50997998322794,
         "energyFractions": {
-          "low": 0.10149032598292755,
-          "body": 0.8400727057685592,
-          "presence": 0.05618119402139083,
-          "air": 0.0022546709430107978
+          "low": 0.03681922260707961,
+          "body": 0.9269022194212337,
+          "presence": 0.035291502152347304,
+          "air": 0.0009252749681327566
         }
       },
       "bright": {
-        "peak": 0.4824069142341614,
-        "rms": 0.09156572741112957,
-        "maxSampleStep": 0.10225911438465118,
-        "spectralCentroidHz": 674.0753055827632,
+        "peak": 0.8296296000480652,
+        "rms": 0.17649828732243533,
+        "maxSampleStep": 0.12321721017360687,
+        "spectralCentroidHz": 551.3327859593809,
         "energyFractions": {
-          "low": 0.04523831592715242,
-          "body": 0.8761609207615232,
-          "presence": 0.07547918156431796,
-          "air": 0.0031197162282759856
+          "low": 0.017646386843049533,
+          "body": 0.9311735765713426,
+          "presence": 0.04967629389443571,
+          "air": 0.0013859104009450534
         }
       },
-      "darkToBrightNormalizedDifference": 1.7070592576969128,
+      "darkToBrightNormalizedDifference": 1.7918149580922438,
       "neutralBypassNormalizedDifference": 0,
-      "darkToNeutralDb": -3.3281255946454125,
-      "brightToNeutralDb": 2.1235710134252765,
-      "brightToDarkHighBandRatio": 215.09127274178493,
+      "darkToNeutralDb": -2.9567816200893966,
+      "brightToNeutralDb": 1.7391319681732018,
+      "brightToDarkHighBandRatio": 117.53360967322975,
       "fundamentalHz": {
-        "dark": 219.97711110322612,
-        "neutral": 219.97854872258753,
-        "bright": 219.9792215584335
+        "dark": 220.0165658948741,
+        "neutral": 220.02135173674037,
+        "bright": 220.02571292421453
       },
-      "maxPitchShiftCents": 0.011314120105107253,
+      "maxPitchShiftCents": 0.03765772021313872,
       "sweep": {
-        "peak": 0.4674047827720642,
-        "rms": 0.07461803544421802,
-        "maxSampleStep": 0.08523823320865631
+        "peak": 0.7618505358695984,
+        "rms": 0.13110493797930733,
+        "maxSampleStep": 0.11435920000076294
       },
-      "returnToNeutralNormalizedDifference": 0.00034029901045290754,
+      "returnToNeutralNormalizedDifference": 0.00033341979639299983,
       "silence": {
         "0": {
           "voicesOff": 0,
@@ -654,58 +657,58 @@
     },
     "vocoder-warm": {
       "dark": {
-        "peak": 0.36625316739082336,
-        "rms": 0.06389404321687304,
-        "maxSampleStep": 0.011660285294055939,
-        "spectralCentroidHz": 212.42837115963715,
+        "peak": 0.3845687806606293,
+        "rms": 0.06942572996266777,
+        "maxSampleStep": 0.012096218764781952,
+        "spectralCentroidHz": 233.08238752391938,
         "energyFractions": {
-          "low": 0.8339787337736256,
-          "body": 0.16586983425075988,
-          "presence": 0.00015115193096266753,
-          "air": 8.284223918366218e-8
+          "low": 0.7003428004350357,
+          "body": 0.29915346243626606,
+          "presence": 0.0004999800970358482,
+          "air": 1.4225066896643268e-7
         }
       },
       "neutral": {
-        "peak": 0.47828564047813416,
-        "rms": 0.06726638850850777,
-        "maxSampleStep": 0.08319678902626038,
-        "spectralCentroidHz": 541.821895353763,
+        "peak": 0.5933781266212463,
+        "rms": 0.08722791406905697,
+        "maxSampleStep": 0.1049078106880188,
+        "spectralCentroidHz": 661.9879065650583,
         "energyFractions": {
-          "low": 0.4621571240932983,
-          "body": 0.433391619284982,
-          "presence": 0.09940342274122646,
-          "air": 0.005046393664105496
+          "low": 0.29679823573154046,
+          "body": 0.5177326439927378,
+          "presence": 0.17924860937595774,
+          "air": 0.006199227780287069
         }
       },
       "bright": {
-        "peak": 0.5979320406913757,
-        "rms": 0.07422276990581057,
-        "maxSampleStep": 0.1163070797920227,
-        "spectralCentroidHz": 760.8109924182663,
+        "peak": 0.7004417181015015,
+        "rms": 0.10507395532104497,
+        "maxSampleStep": 0.14439461007714272,
+        "spectralCentroidHz": 869.8829057847445,
         "energyFractions": {
-          "low": 0.2645782998572101,
-          "body": 0.5524299143309134,
-          "presence": 0.17390873258701972,
-          "air": 0.009080349022870365
+          "low": 0.1516152805385559,
+          "body": 0.5623946291580519,
+          "presence": 0.2762818082774463,
+          "air": 0.00967152219210512
         }
       },
-      "darkToBrightNormalizedDifference": 1.5345711804610564,
+      "darkToBrightNormalizedDifference": 1.5879860518142308,
       "neutralBypassNormalizedDifference": 0,
-      "darkToNeutralDb": -0.4467548026641148,
-      "brightToNeutralDb": 0.854780927369519,
-      "brightToDarkHighBandRatio": 1209.9669787295334,
+      "darkToNeutralDb": -1.982700646419052,
+      "brightToNeutralDb": 1.6167918747200707,
+      "brightToDarkHighBandRatio": 571.7667522394511,
       "fundamentalHz": {
-        "dark": 219.98005149837792,
-        "neutral": 219.98172717003553,
-        "bright": 219.98238477175016
+        "dark": 220.0329780622296,
+        "neutral": 220.03539475817865,
+        "bright": 220.0350158437647
       },
-      "maxPitchShiftCents": 0.013187417495631968,
+      "maxPitchShiftCents": 0.019014619416752625,
       "sweep": {
-        "peak": 0.4783642292022705,
-        "rms": 0.06954476658517626,
-        "maxSampleStep": 0.10971836745738983
+        "peak": 0.6411704421043396,
+        "rms": 0.09369305202614296,
+        "maxSampleStep": 0.13443675637245178
       },
-      "returnToNeutralNormalizedDifference": 0.0003616274686799129,
+      "returnToNeutralNormalizedDifference": 0.00035239905032976774,
       "silence": {
         "0": {
           "voicesOff": 0,
@@ -720,729 +723,820 @@
   },
   "wristExtremes": {
     "44100-ambient-moon-w0-m36-x0": {
-      "peak": 0.5423540472984314,
-      "rms": 0.18362093584224004,
-      "maxSampleStep": 0.008955053985118866
+      "peak": 0.6287680864334106,
+      "rms": 0.21518616410688537,
+      "maxSampleStep": 0.011791612952947617
     },
     "44100-ambient-moon-w0-m36-x1": {
-      "peak": 0.5624111294746399,
-      "rms": 0.2134402727189981,
-      "maxSampleStep": 0.012030979618430138
+      "peak": 0.632999837398529,
+      "rms": 0.24227563234972158,
+      "maxSampleStep": 0.014143258333206177
     },
     "44100-ambient-moon-w0-m81-x0": {
-      "peak": 0.22389410436153412,
-      "rms": 0.0703536273788997,
-      "maxSampleStep": 0.036070242524147034
+      "peak": 0.26054930686950684,
+      "rms": 0.07527694807463606,
+      "maxSampleStep": 0.04243884701281786
     },
     "44100-ambient-moon-w0-m81-x1": {
-      "peak": 0.5318332314491272,
-      "rms": 0.15527931731637434,
-      "maxSampleStep": 0.12227100227028131
+      "peak": 0.61512291431427,
+      "rms": 0.18059060115398265,
+      "maxSampleStep": 0.1488592028617859
     },
     "44100-ambient-moon-w1-m36-x0": {
-      "peak": 0.39616069197654724,
-      "rms": 0.11182490418029575,
-      "maxSampleStep": 0.008762791752815247
+      "peak": 0.4627826511859894,
+      "rms": 0.13169821704069815,
+      "maxSampleStep": 0.0168168842792511
     },
     "44100-ambient-moon-w1-m36-x1": {
-      "peak": 0.48493462800979614,
-      "rms": 0.13785308554071093,
-      "maxSampleStep": 0.02614564448595047
+      "peak": 0.5703452825546265,
+      "rms": 0.15996520803941122,
+      "maxSampleStep": 0.04237233102321625
     },
     "44100-ambient-moon-w1-m81-x0": {
-      "peak": 0.14510653913021088,
-      "rms": 0.044569460703865714,
-      "maxSampleStep": 0.026004306972026825
+      "peak": 0.16976137459278107,
+      "rms": 0.05030720769062632,
+      "maxSampleStep": 0.03238614532165229
     },
     "44100-ambient-moon-w1-m81-x1": {
-      "peak": 0.4641859829425812,
-      "rms": 0.13123680021007375,
-      "maxSampleStep": 0.13473745062947273
+      "peak": 0.5335307717323303,
+      "rms": 0.14998318837364108,
+      "maxSampleStep": 0.15017816424369812
     },
     "44100-ambient-glass-w0-m36-x0": {
-      "peak": 0.6523084044456482,
-      "rms": 0.19617347389345788,
-      "maxSampleStep": 0.01564975455403328
+      "peak": 0.7442672848701477,
+      "rms": 0.11590659289045442,
+      "maxSampleStep": 0.01773538440465927
     },
     "44100-ambient-glass-w0-m36-x1": {
-      "peak": 0.5972197651863098,
-      "rms": 0.21221973248886722,
-      "maxSampleStep": 0.016164764761924744
+      "peak": 0.7448201179504395,
+      "rms": 0.16165894475301454,
+      "maxSampleStep": 0.022426098585128784
     },
     "44100-ambient-glass-w0-m81-x0": {
-      "peak": 0.4889054298400879,
-      "rms": 0.15771386290465425,
-      "maxSampleStep": 0.12132743373513222
+      "peak": 0.5750531554222107,
+      "rms": 0.09602324217328581,
+      "maxSampleStep": 0.1533051459118724
     },
     "44100-ambient-glass-w0-m81-x1": {
-      "peak": 0.539124608039856,
-      "rms": 0.16186236799218362,
-      "maxSampleStep": 0.15725548937916756
+      "peak": 0.6231971383094788,
+      "rms": 0.13335178588860044,
+      "maxSampleStep": 0.21361970156431198
     },
     "44100-ambient-glass-w1-m36-x0": {
-      "peak": 0.601726770401001,
-      "rms": 0.1551903134464229,
-      "maxSampleStep": 0.0205828994512558
+      "peak": 0.6192179322242737,
+      "rms": 0.09356016167078668,
+      "maxSampleStep": 0.021449215710163116
     },
     "44100-ambient-glass-w1-m36-x1": {
-      "peak": 0.6540182828903198,
-      "rms": 0.2046577902811781,
-      "maxSampleStep": 0.03828698070719838
+      "peak": 0.7175268530845642,
+      "rms": 0.14951957909995217,
+      "maxSampleStep": 0.034333158284425735
     },
     "44100-ambient-glass-w1-m81-x0": {
-      "peak": 0.4480228126049042,
-      "rms": 0.11772371123372899,
-      "maxSampleStep": 0.13407955318689346
+      "peak": 0.5914933681488037,
+      "rms": 0.08437334369111216,
+      "maxSampleStep": 0.19392327964305878
     },
     "44100-ambient-glass-w1-m81-x1": {
-      "peak": 0.7212340831756592,
-      "rms": 0.22324142341127232,
-      "maxSampleStep": 0.5038342922925949
+      "peak": 0.7799513339996338,
+      "rms": 0.17298864471124137,
+      "maxSampleStep": 0.5364674031734467
     },
     "44100-ambient-warm-w0-m36-x0": {
-      "peak": 0.3635987639427185,
-      "rms": 0.0995188562255376,
-      "maxSampleStep": 0.007721260190010071
+      "peak": 0.4665564000606537,
+      "rms": 0.14208405400382804,
+      "maxSampleStep": 0.009898052550852299
     },
     "44100-ambient-warm-w0-m36-x1": {
-      "peak": 0.5387147665023804,
-      "rms": 0.15839901930655964,
-      "maxSampleStep": 0.01533566415309906
+      "peak": 0.5206860303878784,
+      "rms": 0.15827463831340494,
+      "maxSampleStep": 0.01214408129453659
     },
     "44100-ambient-warm-w0-m81-x0": {
-      "peak": 0.14538642764091492,
-      "rms": 0.04790777844612426,
-      "maxSampleStep": 0.024092824198305607
+      "peak": 0.29978376626968384,
+      "rms": 0.10628835864988453,
+      "maxSampleStep": 0.06022301781922579
     },
     "44100-ambient-warm-w0-m81-x1": {
-      "peak": 0.49104058742523193,
-      "rms": 0.14593361870597082,
-      "maxSampleStep": 0.11368859931826591
+      "peak": 0.4657553434371948,
+      "rms": 0.142840064896493,
+      "maxSampleStep": 0.1154039315879345
     },
     "44100-ambient-warm-w1-m36-x0": {
-      "peak": 0.43771305680274963,
-      "rms": 0.08859544882801296,
-      "maxSampleStep": 0.03771393001079559
+      "peak": 0.5292448401451111,
+      "rms": 0.11749651129303851,
+      "maxSampleStep": 0.05882151424884796
     },
     "44100-ambient-warm-w1-m36-x1": {
-      "peak": 0.6070162057876587,
-      "rms": 0.14567847398625047,
-      "maxSampleStep": 0.2389783374965191
+      "peak": 0.646430492401123,
+      "rms": 0.14487581018065773,
+      "maxSampleStep": 0.30469460040330887
     },
     "44100-ambient-warm-w1-m81-x0": {
-      "peak": 0.10467638820409775,
-      "rms": 0.031095425375556617,
-      "maxSampleStep": 0.021015185862779617
+      "peak": 0.21567565202713013,
+      "rms": 0.07265144116102128,
+      "maxSampleStep": 0.056080651469528675
     },
     "44100-ambient-warm-w1-m81-x1": {
-      "peak": 0.5378710031509399,
-      "rms": 0.14414585584797515,
-      "maxSampleStep": 0.28792253136634827
+      "peak": 0.5785196423530579,
+      "rms": 0.1597241059324298,
+      "maxSampleStep": 0.44882871210575104
     },
     "44100-vocoder-moon-w0-m36-x0": {
-      "peak": 0.5612084269523621,
-      "rms": 0.1372302521178387,
-      "maxSampleStep": 0.015650570392608643
+      "peak": 0.5340558290481567,
+      "rms": 0.11980818328995256,
+      "maxSampleStep": 0.011977918446063995
     },
     "44100-vocoder-moon-w0-m36-x1": {
-      "peak": 0.5818466544151306,
-      "rms": 0.15892318962907545,
-      "maxSampleStep": 0.016153044998645782
+      "peak": 0.44075721502304077,
+      "rms": 0.12745968912666558,
+      "maxSampleStep": 0.013568475842475891
     },
     "44100-vocoder-moon-w0-m81-x0": {
-      "peak": 0.6802184581756592,
-      "rms": 0.2068084015955585,
-      "maxSampleStep": 0.16936687380075455
+      "peak": 0.5863553881645203,
+      "rms": 0.174967150406924,
+      "maxSampleStep": 0.13369328901171684
     },
     "44100-vocoder-moon-w0-m81-x1": {
-      "peak": 0.8009146451950073,
-      "rms": 0.25979457219341423,
-      "maxSampleStep": 0.24560988694429398
+      "peak": 0.7807214260101318,
+      "rms": 0.23542501363409205,
+      "maxSampleStep": 0.24233969300985336
     },
     "44100-vocoder-moon-w1-m36-x0": {
-      "peak": 0.8140000700950623,
-      "rms": 0.18219195745892425,
-      "maxSampleStep": 0.1364360749721527
+      "peak": 0.6584277749061584,
+      "rms": 0.13633245597003615,
+      "maxSampleStep": 0.09021635353565216
     },
     "44100-vocoder-moon-w1-m36-x1": {
-      "peak": 0.8304106593132019,
-      "rms": 0.20313780914835744,
-      "maxSampleStep": 0.24402371048927307
+      "peak": 0.7309017181396484,
+      "rms": 0.167350483528227,
+      "maxSampleStep": 0.17488327622413635
     },
     "44100-vocoder-moon-w1-m81-x0": {
-      "peak": 0.6185244917869568,
-      "rms": 0.16168591322013842,
-      "maxSampleStep": 0.1641371250152588
+      "peak": 0.5067630410194397,
+      "rms": 0.12947736922652223,
+      "maxSampleStep": 0.12622139602899551
     },
     "44100-vocoder-moon-w1-m81-x1": {
-      "peak": 0.7750850319862366,
-      "rms": 0.22130709051487096,
-      "maxSampleStep": 0.3892556466162205
+      "peak": 0.7305000424385071,
+      "rms": 0.1951519610490608,
+      "maxSampleStep": 0.3086649589240551
     },
     "44100-vocoder-glass-w0-m36-x0": {
-      "peak": 0.436416357755661,
-      "rms": 0.12734898795214314,
-      "maxSampleStep": 0.010736696422100067
+      "peak": 0.6797177791595459,
+      "rms": 0.15741095223507873,
+      "maxSampleStep": 0.025931582786142826
     },
     "44100-vocoder-glass-w0-m36-x1": {
-      "peak": 0.6703321933746338,
-      "rms": 0.23391082305476177,
-      "maxSampleStep": 0.02318173134699464
+      "peak": 0.7619690895080566,
+      "rms": 0.21107921622993683,
+      "maxSampleStep": 0.038801636546850204
     },
     "44100-vocoder-glass-w0-m81-x0": {
-      "peak": 0.6177753806114197,
-      "rms": 0.1923823868095824,
-      "maxSampleStep": 0.13027311116456985
+      "peak": 0.7616956233978271,
+      "rms": 0.18596233748635757,
+      "maxSampleStep": 0.2690315246582031
     },
     "44100-vocoder-glass-w0-m81-x1": {
-      "peak": 0.7931907773017883,
-      "rms": 0.30589054030124496,
-      "maxSampleStep": 0.28297460824251175
+      "peak": 0.8046097159385681,
+      "rms": 0.23733164090458247,
+      "maxSampleStep": 0.35358563996851444
     },
     "44100-vocoder-glass-w1-m36-x0": {
-      "peak": 0.47687828540802,
-      "rms": 0.13411218563997376,
-      "maxSampleStep": 0.10706738568842411
+      "peak": 0.6956568956375122,
+      "rms": 0.13322033166039346,
+      "maxSampleStep": 0.08017588406801224
     },
     "44100-vocoder-glass-w1-m36-x1": {
-      "peak": 0.7161961197853088,
-      "rms": 0.21598428904594813,
-      "maxSampleStep": 0.2068851850926876
+      "peak": 0.8248713612556458,
+      "rms": 0.21552725608732215,
+      "maxSampleStep": 0.198293749243021
     },
     "44100-vocoder-glass-w1-m81-x0": {
-      "peak": 0.515242338180542,
-      "rms": 0.1328959847655731,
-      "maxSampleStep": 0.15053991600871086
+      "peak": 0.7471765875816345,
+      "rms": 0.15736718092562768,
+      "maxSampleStep": 0.3645027130842209
     },
     "44100-vocoder-glass-w1-m81-x1": {
-      "peak": 0.8500328063964844,
-      "rms": 0.29686872940477016,
-      "maxSampleStep": 0.6151763200759888
+      "peak": 0.868855357170105,
+      "rms": 0.27689488501656057,
+      "maxSampleStep": 0.8043348491191864
     },
     "44100-vocoder-warm-w0-m36-x0": {
-      "peak": 0.6457937955856323,
-      "rms": 0.22367594746508196,
-      "maxSampleStep": 0.013367027044296265
+      "peak": 0.6620177030563354,
+      "rms": 0.2037427916005374,
+      "maxSampleStep": 0.015448525547981262
     },
     "44100-vocoder-warm-w0-m36-x1": {
-      "peak": 0.6975879073143005,
-      "rms": 0.21786873658655256,
-      "maxSampleStep": 0.01606909930706024
+      "peak": 0.7165170907974243,
+      "rms": 0.2244254338381919,
+      "maxSampleStep": 0.01793748140335083
     },
     "44100-vocoder-warm-w0-m81-x0": {
-      "peak": 0.6637910008430481,
-      "rms": 0.23919320741131067,
-      "maxSampleStep": 0.15742028504610062
+      "peak": 0.5843706130981445,
+      "rms": 0.20267129423669816,
+      "maxSampleStep": 0.12572576478123665
     },
     "44100-vocoder-warm-w0-m81-x1": {
-      "peak": 0.71165931224823,
-      "rms": 0.232100452386703,
-      "maxSampleStep": 0.17500825971364975
+      "peak": 0.7810317873954773,
+      "rms": 0.26999720225547946,
+      "maxSampleStep": 0.2534939795732498
     },
     "44100-vocoder-warm-w1-m36-x0": {
-      "peak": 0.7454400062561035,
-      "rms": 0.186491770591449,
-      "maxSampleStep": 0.11172294616699219
+      "peak": 0.7831817865371704,
+      "rms": 0.20093871232584593,
+      "maxSampleStep": 0.07914671301841736
     },
     "44100-vocoder-warm-w1-m36-x1": {
-      "peak": 0.7679694294929504,
-      "rms": 0.19170199050440237,
-      "maxSampleStep": 0.24892261624336243
+      "peak": 0.8526869416236877,
+      "rms": 0.23562399110365068,
+      "maxSampleStep": 0.3493698537349701
     },
     "44100-vocoder-warm-w1-m81-x0": {
-      "peak": 0.5327274799346924,
-      "rms": 0.17466268953106956,
-      "maxSampleStep": 0.1497677769511938
+      "peak": 0.448501318693161,
+      "rms": 0.13993344173496394,
+      "maxSampleStep": 0.1034995149821043
     },
     "44100-vocoder-warm-w1-m81-x1": {
-      "peak": 0.68941330909729,
-      "rms": 0.2018530947419844,
-      "maxSampleStep": 0.32921117544174194
+      "peak": 0.8037177920341492,
+      "rms": 0.2789136750138787,
+      "maxSampleStep": 0.5550117194652557
     },
     "48000-ambient-moon-w0-m36-x0": {
-      "peak": 0.5427473187446594,
-      "rms": 0.18373885158509137,
-      "maxSampleStep": 0.008282080292701721
+      "peak": 0.6291062831878662,
+      "rms": 0.21529451797263607,
+      "maxSampleStep": 0.010970138013362885
     },
     "48000-ambient-moon-w0-m36-x1": {
-      "peak": 0.5679638385772705,
-      "rms": 0.21452692922508546,
-      "maxSampleStep": 0.010755017399787903
+      "peak": 0.6420590281486511,
+      "rms": 0.24518000684354846,
+      "maxSampleStep": 0.013570994138717651
     },
     "48000-ambient-moon-w0-m81-x0": {
-      "peak": 0.22412970662117004,
-      "rms": 0.07036949696425472,
-      "maxSampleStep": 0.03315387852489948
+      "peak": 0.2607215642929077,
+      "rms": 0.0753065363871952,
+      "maxSampleStep": 0.0391697296872735
     },
     "48000-ambient-moon-w0-m81-x1": {
-      "peak": 0.47280097007751465,
-      "rms": 0.12916946330087806,
-      "maxSampleStep": 0.10016482695937157
+      "peak": 0.680035412311554,
+      "rms": 0.16733890408132734,
+      "maxSampleStep": 0.15702567994594574
     },
     "48000-ambient-moon-w1-m36-x0": {
-      "peak": 0.3962588906288147,
-      "rms": 0.11187216567456958,
-      "maxSampleStep": 0.008131861686706543
+      "peak": 0.46280989050865173,
+      "rms": 0.13173693293079392,
+      "maxSampleStep": 0.01541726291179657
     },
     "48000-ambient-moon-w1-m36-x1": {
-      "peak": 0.49345365166664124,
-      "rms": 0.13847466762029173,
-      "maxSampleStep": 0.02532222867012024
+      "peak": 0.5583696365356445,
+      "rms": 0.159878260345598,
+      "maxSampleStep": 0.044230587780475616
     },
     "48000-ambient-moon-w1-m81-x0": {
-      "peak": 0.1454748511314392,
-      "rms": 0.04460547203312207,
-      "maxSampleStep": 0.02398580266162753
+      "peak": 0.16965825855731964,
+      "rms": 0.05036050029636792,
+      "maxSampleStep": 0.029898333828896284
     },
     "48000-ambient-moon-w1-m81-x1": {
-      "peak": 0.4262336492538452,
-      "rms": 0.1032589060809828,
-      "maxSampleStep": 0.12755176797509193
+      "peak": 0.6037590503692627,
+      "rms": 0.1315485269811441,
+      "maxSampleStep": 0.13924291729927063
     },
     "48000-ambient-glass-w0-m36-x0": {
-      "peak": 0.652628481388092,
-      "rms": 0.1962332110779902,
-      "maxSampleStep": 0.014370821416378021
+      "peak": 0.7443633079528809,
+      "rms": 0.11596154977148643,
+      "maxSampleStep": 0.016444925218820572
     },
     "48000-ambient-glass-w0-m36-x1": {
-      "peak": 0.596721887588501,
-      "rms": 0.20887174865965033,
-      "maxSampleStep": 0.0152335986495018
+      "peak": 0.7453293800354004,
+      "rms": 0.15902638767567207,
+      "maxSampleStep": 0.017833033576607704
     },
     "48000-ambient-glass-w0-m81-x0": {
-      "peak": 0.4879852831363678,
-      "rms": 0.15728757231572627,
-      "maxSampleStep": 0.11131202057003975
+      "peak": 0.5732144117355347,
+      "rms": 0.09602398133566012,
+      "maxSampleStep": 0.14106270670890808
     },
     "48000-ambient-glass-w0-m81-x1": {
-      "peak": 0.4773062765598297,
-      "rms": 0.14462992881436912,
-      "maxSampleStep": 0.13902092212811112
+      "peak": 0.6203103065490723,
+      "rms": 0.12218585195783248,
+      "maxSampleStep": 0.17730529978871346
     },
     "48000-ambient-glass-w1-m36-x0": {
-      "peak": 0.601841926574707,
-      "rms": 0.15518468794569754,
-      "maxSampleStep": 0.01904001086950302
+      "peak": 0.619332492351532,
+      "rms": 0.09358311320259963,
+      "maxSampleStep": 0.019700419157743454
     },
     "48000-ambient-glass-w1-m36-x1": {
-      "peak": 0.6595045328140259,
-      "rms": 0.2059553756268566,
-      "maxSampleStep": 0.03790629096329212
+      "peak": 0.6495226621627808,
+      "rms": 0.1443099437413756,
+      "maxSampleStep": 0.029393844306468964
     },
     "48000-ambient-glass-w1-m81-x0": {
-      "peak": 0.4485211670398712,
-      "rms": 0.11748466325455635,
-      "maxSampleStep": 0.12331938371062279
+      "peak": 0.5917816758155823,
+      "rms": 0.08440582677446923,
+      "maxSampleStep": 0.17853791639208794
     },
     "48000-ambient-glass-w1-m81-x1": {
-      "peak": 0.7223414182662964,
-      "rms": 0.2138188687557138,
-      "maxSampleStep": 0.48258131742477417
+      "peak": 0.7236518859863281,
+      "rms": 0.1499177411698123,
+      "maxSampleStep": 0.43368133902549744
     },
     "48000-ambient-warm-w0-m36-x0": {
-      "peak": 0.36369121074676514,
-      "rms": 0.09959915447314152,
-      "maxSampleStep": 0.007100433111190796
+      "peak": 0.4668247401714325,
+      "rms": 0.14219200198404966,
+      "maxSampleStep": 0.009096963331103325
     },
     "48000-ambient-warm-w0-m36-x1": {
-      "peak": 0.5399518609046936,
-      "rms": 0.15567036245712548,
-      "maxSampleStep": 0.014016254572197795
+      "peak": 0.5210905075073242,
+      "rms": 0.15738009261819144,
+      "maxSampleStep": 0.0108921118080616
     },
     "48000-ambient-warm-w0-m81-x0": {
-      "peak": 0.14556066691875458,
-      "rms": 0.04794490370199252,
-      "maxSampleStep": 0.022090531885623932
+      "peak": 0.2998722493648529,
+      "rms": 0.10629464135862726,
+      "maxSampleStep": 0.05543599650263786
     },
     "48000-ambient-warm-w0-m81-x1": {
-      "peak": 0.4634539484977722,
-      "rms": 0.13543300449080103,
-      "maxSampleStep": 0.10398951545357704
+      "peak": 0.460712194442749,
+      "rms": 0.140537420611581,
+      "maxSampleStep": 0.10800620168447495
     },
     "48000-ambient-warm-w1-m36-x0": {
-      "peak": 0.43815192580223083,
-      "rms": 0.08865101619074572,
-      "maxSampleStep": 0.034400202333927155
+      "peak": 0.5293228030204773,
+      "rms": 0.11758547391392053,
+      "maxSampleStep": 0.05453997850418091
     },
     "48000-ambient-warm-w1-m36-x1": {
-      "peak": 0.6277595162391663,
-      "rms": 0.14487573528362702,
-      "maxSampleStep": 0.20873212814331055
+      "peak": 0.6526803374290466,
+      "rms": 0.14484993541421878,
+      "maxSampleStep": 0.3210223615169525
     },
     "48000-ambient-warm-w1-m81-x0": {
-      "peak": 0.10503016412258148,
-      "rms": 0.0311505629249126,
-      "maxSampleStep": 0.01948334090411663
+      "peak": 0.21639463305473328,
+      "rms": 0.07271521878326594,
+      "maxSampleStep": 0.05196423828601837
     },
     "48000-ambient-warm-w1-m81-x1": {
-      "peak": 0.5213816165924072,
-      "rms": 0.13249416201925995,
-      "maxSampleStep": 0.25897160917520523
+      "peak": 0.5907848477363586,
+      "rms": 0.1563284516753331,
+      "maxSampleStep": 0.4016367420554161
     },
     "48000-vocoder-moon-w0-m36-x0": {
-      "peak": 0.5610558390617371,
-      "rms": 0.13724839347158438,
-      "maxSampleStep": 0.014389090240001678
+      "peak": 0.5338860750198364,
+      "rms": 0.11979685173772456,
+      "maxSampleStep": 0.011029273271560669
     },
     "48000-vocoder-moon-w0-m36-x1": {
-      "peak": 0.5647891163825989,
-      "rms": 0.15550786875695877,
-      "maxSampleStep": 0.014977559447288513
+      "peak": 0.44451475143432617,
+      "rms": 0.12525092523412978,
+      "maxSampleStep": 0.010798759758472443
     },
     "48000-vocoder-moon-w0-m81-x0": {
-      "peak": 0.6786765456199646,
-      "rms": 0.20647535454632962,
-      "maxSampleStep": 0.1572861485183239
+      "peak": 0.5860058665275574,
+      "rms": 0.17492123883686828,
+      "maxSampleStep": 0.12335455045104027
     },
     "48000-vocoder-moon-w0-m81-x1": {
-      "peak": 0.8388689160346985,
-      "rms": 0.2489125634150697,
-      "maxSampleStep": 0.3061177730560303
+      "peak": 0.7873263359069824,
+      "rms": 0.25834463051228185,
+      "maxSampleStep": 0.24085991829633713
     },
     "48000-vocoder-moon-w1-m36-x0": {
-      "peak": 0.8137710094451904,
-      "rms": 0.18219773396415287,
-      "maxSampleStep": 0.1287105232477188
+      "peak": 0.6589969992637634,
+      "rms": 0.13631022458608127,
+      "maxSampleStep": 0.08334015309810638
     },
     "48000-vocoder-moon-w1-m36-x1": {
-      "peak": 0.8364261984825134,
-      "rms": 0.2009884654775859,
-      "maxSampleStep": 0.23625754565000534
+      "peak": 0.7152929306030273,
+      "rms": 0.1611908808085983,
+      "maxSampleStep": 0.14344733953475952
     },
     "48000-vocoder-moon-w1-m81-x0": {
-      "peak": 0.6183555126190186,
-      "rms": 0.16156897773773352,
-      "maxSampleStep": 0.152856282889843
+      "peak": 0.5065094828605652,
+      "rms": 0.12954006975861507,
+      "maxSampleStep": 0.11567592807114124
     },
     "48000-vocoder-moon-w1-m81-x1": {
-      "peak": 0.8498579263687134,
-      "rms": 0.22059661889494364,
-      "maxSampleStep": 0.42866001185029745
+      "peak": 0.7697112560272217,
+      "rms": 0.21470013503521013,
+      "maxSampleStep": 0.39593786001205444
     },
     "48000-vocoder-glass-w0-m36-x0": {
-      "peak": 0.4363532066345215,
-      "rms": 0.12742461977893377,
-      "maxSampleStep": 0.00994342565536499
+      "peak": 0.6795445084571838,
+      "rms": 0.1574415871285178,
+      "maxSampleStep": 0.023816252127289772
     },
     "48000-vocoder-glass-w0-m36-x1": {
-      "peak": 0.6680928468704224,
-      "rms": 0.23306961999778808,
-      "maxSampleStep": 0.022677604109048843
+      "peak": 0.7477207779884338,
+      "rms": 0.20729127407247924,
+      "maxSampleStep": 0.03238088637590408
     },
     "48000-vocoder-glass-w0-m81-x0": {
-      "peak": 0.6165850162506104,
-      "rms": 0.19193367334926723,
-      "maxSampleStep": 0.12100577354431152
+      "peak": 0.7604796290397644,
+      "rms": 0.1860337036248567,
+      "maxSampleStep": 0.25164035707712173
     },
     "48000-vocoder-glass-w0-m81-x1": {
-      "peak": 0.7487543225288391,
-      "rms": 0.2743399003374161,
-      "maxSampleStep": 0.23007559031248093
+      "peak": 0.785652220249176,
+      "rms": 0.21337875540521004,
+      "maxSampleStep": 0.30691394209861755
     },
     "48000-vocoder-glass-w1-m36-x0": {
-      "peak": 0.47690892219543457,
-      "rms": 0.13404613898817494,
-      "maxSampleStep": 0.09991025924682617
+      "peak": 0.6958075761795044,
+      "rms": 0.13323057099966767,
+      "maxSampleStep": 0.07319013774394989
     },
     "48000-vocoder-glass-w1-m36-x1": {
-      "peak": 0.7263615727424622,
-      "rms": 0.2234540962019254,
-      "maxSampleStep": 0.2112404927611351
+      "peak": 0.8088580369949341,
+      "rms": 0.2091214517197914,
+      "maxSampleStep": 0.18144594132900238
     },
     "48000-vocoder-glass-w1-m81-x0": {
-      "peak": 0.512860119342804,
-      "rms": 0.1327413798386227,
-      "maxSampleStep": 0.1365229580551386
+      "peak": 0.7455286383628845,
+      "rms": 0.15752719218808367,
+      "maxSampleStep": 0.3429267518222332
     },
     "48000-vocoder-glass-w1-m81-x1": {
-      "peak": 0.7995440363883972,
-      "rms": 0.28330296717292736,
-      "maxSampleStep": 0.5295616388320923
+      "peak": 0.8546873927116394,
+      "rms": 0.2479234631676339,
+      "maxSampleStep": 0.6985215544700623
     },
     "48000-vocoder-warm-w0-m36-x0": {
-      "peak": 0.6459066271781921,
-      "rms": 0.2236165404583283,
-      "maxSampleStep": 0.0122557133436203
+      "peak": 0.6620284914970398,
+      "rms": 0.20376356946945118,
+      "maxSampleStep": 0.014313757419586182
     },
     "48000-vocoder-warm-w0-m36-x1": {
-      "peak": 0.6996089816093445,
-      "rms": 0.2158804631450238,
-      "maxSampleStep": 0.014462217688560486
+      "peak": 0.7164593935012817,
+      "rms": 0.22311353461517147,
+      "maxSampleStep": 0.01660826802253723
     },
     "48000-vocoder-warm-w0-m81-x0": {
-      "peak": 0.6641063690185547,
-      "rms": 0.2392571006894272,
-      "maxSampleStep": 0.14437223598361015
+      "peak": 0.5851355195045471,
+      "rms": 0.20270492639103294,
+      "maxSampleStep": 0.11568546295166016
     },
     "48000-vocoder-warm-w0-m81-x1": {
-      "peak": 0.6752319931983948,
-      "rms": 0.21412239266858293,
-      "maxSampleStep": 0.1591043071821332
+      "peak": 0.7715103030204773,
+      "rms": 0.2630552825917809,
+      "maxSampleStep": 0.22474835813045502
     },
     "48000-vocoder-warm-w1-m36-x0": {
-      "peak": 0.7462215423583984,
-      "rms": 0.18646243370703303,
-      "maxSampleStep": 0.10129676759243011
+      "peak": 0.7838483452796936,
+      "rms": 0.20099615017615186,
+      "maxSampleStep": 0.07295113801956177
     },
     "48000-vocoder-warm-w1-m36-x1": {
-      "peak": 0.7584211826324463,
-      "rms": 0.18929699587487434,
-      "maxSampleStep": 0.23559238761663437
+      "peak": 0.8522335886955261,
+      "rms": 0.23591211462935605,
+      "maxSampleStep": 0.3324665278196335
     },
     "48000-vocoder-warm-w1-m81-x0": {
-      "peak": 0.532846987247467,
-      "rms": 0.1748730544603826,
-      "maxSampleStep": 0.14016066677868366
+      "peak": 0.44872304797172546,
+      "rms": 0.14006845146077093,
+      "maxSampleStep": 0.09550758451223373
     },
     "48000-vocoder-warm-w1-m81-x1": {
-      "peak": 0.6625141501426697,
-      "rms": 0.18145575282923831,
-      "maxSampleStep": 0.2686576768755913
+      "peak": 0.8017416596412659,
+      "rms": 0.2699836864206966,
+      "maxSampleStep": 0.49621643126010895
     },
     "96000-ambient-moon-w0-m36-x0": {
-      "peak": 0.5428369045257568,
-      "rms": 0.1835491659933895,
-      "maxSampleStep": 0.0062049925327301025
+      "peak": 0.6293031573295593,
+      "rms": 0.2151036974084406,
+      "maxSampleStep": 0.007361322641372681
     },
     "96000-ambient-moon-w0-m36-x1": {
-      "peak": 0.4960706830024719,
-      "rms": 0.157470480102815,
-      "maxSampleStep": 0.0060076117515563965
+      "peak": 0.6108711361885071,
+      "rms": 0.19587110183818593,
+      "maxSampleStep": 0.0078122615814208984
     },
     "96000-ambient-moon-w0-m81-x0": {
-      "peak": 0.22460636496543884,
-      "rms": 0.07038149419361955,
-      "maxSampleStep": 0.016668926924467087
+      "peak": 0.2623234689235687,
+      "rms": 0.07542995197985373,
+      "maxSampleStep": 0.019607624039053917
     },
     "96000-ambient-moon-w0-m81-x1": {
-      "peak": 0.512172281742096,
-      "rms": 0.14979065463875826,
-      "maxSampleStep": 0.0525029543787241
+      "peak": 0.6515389680862427,
+      "rms": 0.1754876764369307,
+      "maxSampleStep": 0.07651301845908165
     },
     "96000-ambient-moon-w1-m36-x0": {
-      "peak": 0.39575353264808655,
-      "rms": 0.1117623362839247,
-      "maxSampleStep": 0.005363196134567261
+      "peak": 0.46277448534965515,
+      "rms": 0.13162675460301468,
+      "maxSampleStep": 0.008298978209495544
     },
     "96000-ambient-moon-w1-m36-x1": {
-      "peak": 0.36842381954193115,
-      "rms": 0.09709135623149497,
-      "maxSampleStep": 0.013849817216396332
+      "peak": 0.4727015495300293,
+      "rms": 0.12214123291308356,
+      "maxSampleStep": 0.02148708701133728
     },
     "96000-ambient-moon-w1-m81-x0": {
-      "peak": 0.14581918716430664,
-      "rms": 0.044719149121683316,
-      "maxSampleStep": 0.012071529403328896
+      "peak": 0.171004056930542,
+      "rms": 0.05058568780677982,
+      "maxSampleStep": 0.015049923909828067
     },
     "96000-ambient-moon-w1-m81-x1": {
-      "peak": 0.44189074635505676,
-      "rms": 0.1170563907296363,
-      "maxSampleStep": 0.05898610455915332
+      "peak": 0.5707687139511108,
+      "rms": 0.1333442457949715,
+      "maxSampleStep": 0.07390910759568214
     },
     "96000-ambient-glass-w0-m36-x0": {
-      "peak": 0.6526396870613098,
-      "rms": 0.19592500361564733,
-      "maxSampleStep": 0.008146733045578003
+      "peak": 0.7451819777488708,
+      "rms": 0.11588825365238661,
+      "maxSampleStep": 0.009307414293289185
     },
     "96000-ambient-glass-w0-m36-x1": {
-      "peak": 0.5326817631721497,
-      "rms": 0.17500055418930902,
-      "maxSampleStep": 0.007239200873300433
+      "peak": 0.7337827086448669,
+      "rms": 0.1404826357916629,
+      "maxSampleStep": 0.010043010115623474
     },
     "96000-ambient-glass-w0-m81-x0": {
-      "peak": 0.4837118685245514,
-      "rms": 0.154829756249875,
-      "maxSampleStep": 0.05520580615848303
+      "peak": 0.5753865242004395,
+      "rms": 0.09598317529341382,
+      "maxSampleStep": 0.07109062932431698
     },
     "96000-ambient-glass-w0-m81-x1": {
-      "peak": 0.5545604228973389,
-      "rms": 0.15891333818530393,
-      "maxSampleStep": 0.07452496141195297
+      "peak": 0.6663589477539062,
+      "rms": 0.1380336642865741,
+      "maxSampleStep": 0.1049581840634346
     },
     "96000-ambient-glass-w1-m36-x0": {
-      "peak": 0.6017663478851318,
-      "rms": 0.1549310116197908,
-      "maxSampleStep": 0.010314889252185822
+      "peak": 0.6197498440742493,
+      "rms": 0.09354608474485251,
+      "maxSampleStep": 0.009867243468761444
     },
     "96000-ambient-glass-w1-m36-x1": {
-      "peak": 0.5836330652236938,
-      "rms": 0.17218973628401243,
-      "maxSampleStep": 0.01601342624053359
+      "peak": 0.6113440990447998,
+      "rms": 0.13083689439394902,
+      "maxSampleStep": 0.013218291103839874
     },
     "96000-ambient-glass-w1-m81-x0": {
-      "peak": 0.44476965069770813,
-      "rms": 0.1159928817458598,
-      "maxSampleStep": 0.06132540665566921
+      "peak": 0.5947262048721313,
+      "rms": 0.0844991481099079,
+      "maxSampleStep": 0.09097924083471298
     },
     "96000-ambient-glass-w1-m81-x1": {
-      "peak": 0.7269333004951477,
-      "rms": 0.2201265756946812,
-      "maxSampleStep": 0.2621843218803406
+      "peak": 0.7925947308540344,
+      "rms": 0.1691954203307036,
+      "maxSampleStep": 0.27351654320955276
     },
     "96000-ambient-warm-w0-m36-x0": {
-      "peak": 0.3632965385913849,
-      "rms": 0.09945092590298527,
-      "maxSampleStep": 0.004333660006523132
+      "peak": 0.46663573384284973,
+      "rms": 0.14199487689821053,
+      "maxSampleStep": 0.006233632564544678
     },
     "96000-ambient-warm-w0-m36-x1": {
-      "peak": 0.46855759620666504,
-      "rms": 0.13538290141663284,
-      "maxSampleStep": 0.029991567134857178
+      "peak": 0.5009368658065796,
+      "rms": 0.15005407133668197,
+      "maxSampleStep": 0.00864572823047638
     },
     "96000-ambient-warm-w0-m81-x0": {
-      "peak": 0.14621968567371368,
-      "rms": 0.04813876562579411,
-      "maxSampleStep": 0.01118408516049385
+      "peak": 0.30070826411247253,
+      "rms": 0.10646133783203338,
+      "maxSampleStep": 0.027923972345888615
     },
     "96000-ambient-warm-w0-m81-x1": {
-      "peak": 0.505760908126831,
-      "rms": 0.14797393653185284,
-      "maxSampleStep": 0.05964500643312931
+      "peak": 0.4698356091976166,
+      "rms": 0.1459970505125637,
+      "maxSampleStep": 0.05436011636629701
     },
     "96000-ambient-warm-w1-m36-x0": {
-      "peak": 0.43845105171203613,
-      "rms": 0.08851510692825083,
-      "maxSampleStep": 0.017589613795280457
+      "peak": 0.5286749601364136,
+      "rms": 0.1174429795992886,
+      "maxSampleStep": 0.02749176323413849
     },
     "96000-ambient-warm-w1-m36-x1": {
-      "peak": 0.5761923789978027,
-      "rms": 0.12963513612861868,
-      "maxSampleStep": 0.11507067969068885
+      "peak": 0.6383688449859619,
+      "rms": 0.13954278782405186,
+      "maxSampleStep": 0.17393095418810844
     },
     "96000-ambient-warm-w1-m81-x0": {
-      "peak": 0.1069294735789299,
-      "rms": 0.03140113055368426,
-      "maxSampleStep": 0.009884541854262352
+      "peak": 0.21807876229286194,
+      "rms": 0.07305452095110355,
+      "maxSampleStep": 0.02627630694769323
     },
     "96000-ambient-warm-w1-m81-x1": {
-      "peak": 0.5405986309051514,
-      "rms": 0.1396349947928661,
-      "maxSampleStep": 0.14949430897831917
+      "peak": 0.5808266997337341,
+      "rms": 0.15870271021698715,
+      "maxSampleStep": 0.2494863202155102
     },
     "96000-vocoder-moon-w0-m36-x0": {
-      "peak": 0.561439037322998,
-      "rms": 0.13706329507685688,
-      "maxSampleStep": 0.007826372981071472
+      "peak": 0.533820629119873,
+      "rms": 0.11962662608205361,
+      "maxSampleStep": 0.006759554147720337
     },
     "96000-vocoder-moon-w0-m36-x1": {
-      "peak": 0.5450646877288818,
-      "rms": 0.13710435356129222,
-      "maxSampleStep": 0.007622763514518738
+      "peak": 0.4437845051288605,
+      "rms": 0.11080527414382865,
+      "maxSampleStep": 0.006096348166465759
     },
     "96000-vocoder-moon-w0-m81-x0": {
-      "peak": 0.6764419078826904,
-      "rms": 0.20483078444654523,
-      "maxSampleStep": 0.07876385189592838
+      "peak": 0.588952362537384,
+      "rms": 0.17490940215022643,
+      "maxSampleStep": 0.0624539740383625
     },
     "96000-vocoder-moon-w0-m81-x1": {
-      "peak": 0.8549649119377136,
-      "rms": 0.30491177386116697,
-      "maxSampleStep": 0.1509235743433237
+      "peak": 0.8261467814445496,
+      "rms": 0.27260838209339955,
+      "maxSampleStep": 0.11556170880794525
     },
     "96000-vocoder-moon-w1-m36-x0": {
-      "peak": 0.8139585852622986,
-      "rms": 0.1821619870207073,
-      "maxSampleStep": 0.0658198893070221
+      "peak": 0.6592216491699219,
+      "rms": 0.1362650965467643,
+      "maxSampleStep": 0.042851999402046204
     },
     "96000-vocoder-moon-w1-m36-x1": {
-      "peak": 0.7877528071403503,
-      "rms": 0.19208789380761918,
-      "maxSampleStep": 0.1350829943548888
+      "peak": 0.7719205021858215,
+      "rms": 0.15931930633183328,
+      "maxSampleStep": 0.08666570484638214
     },
     "96000-vocoder-moon-w1-m81-x0": {
-      "peak": 0.6180298328399658,
-      "rms": 0.16087423721324495,
-      "maxSampleStep": 0.07837219163775444
+      "peak": 0.5081104636192322,
+      "rms": 0.1298943070871191,
+      "maxSampleStep": 0.05923243146389723
     },
     "96000-vocoder-moon-w1-m81-x1": {
-      "peak": 0.8438058495521545,
-      "rms": 0.261722808230582,
-      "maxSampleStep": 0.2638997212052345
+      "peak": 0.7712628841400146,
+      "rms": 0.2244190210455538,
+      "maxSampleStep": 0.1871841847896576
     },
     "96000-vocoder-glass-w0-m36-x0": {
-      "peak": 0.43509697914123535,
-      "rms": 0.12718397752197302,
-      "maxSampleStep": 0.005959004163742065
+      "peak": 0.6795961856842041,
+      "rms": 0.15733883218236402,
+      "maxSampleStep": 0.012421682476997375
     },
     "96000-vocoder-glass-w0-m36-x1": {
-      "peak": 0.6012808084487915,
-      "rms": 0.19637344254894798,
-      "maxSampleStep": 0.008558139204978943
+      "peak": 0.7432395815849304,
+      "rms": 0.19453842151525685,
+      "maxSampleStep": 0.015903898049145937
     },
     "96000-vocoder-glass-w0-m81-x0": {
-      "peak": 0.6134130954742432,
-      "rms": 0.19073332058506517,
-      "maxSampleStep": 0.06279778108000755
+      "peak": 0.7615562677383423,
+      "rms": 0.18626752195733506,
+      "maxSampleStep": 0.1274055726826191
     },
     "96000-vocoder-glass-w0-m81-x1": {
-      "peak": 0.8138911724090576,
-      "rms": 0.3251595276339791,
-      "maxSampleStep": 0.14319883286952972
+      "peak": 0.8500584363937378,
+      "rms": 0.25118688659035315,
+      "maxSampleStep": 0.18358710035681725
     },
     "96000-vocoder-glass-w1-m36-x0": {
-      "peak": 0.4777640700340271,
-      "rms": 0.13421216336036637,
-      "maxSampleStep": 0.051846690475940704
+      "peak": 0.6960137486457825,
+      "rms": 0.13318502870676585,
+      "maxSampleStep": 0.038055047392845154
     },
     "96000-vocoder-glass-w1-m36-x1": {
-      "peak": 0.6805374026298523,
-      "rms": 0.19307270389809578,
-      "maxSampleStep": 0.12107257847674191
+      "peak": 0.8243702054023743,
+      "rms": 0.19986794613112913,
+      "maxSampleStep": 0.09803470969200134
     },
     "96000-vocoder-glass-w1-m81-x0": {
-      "peak": 0.5087732076644897,
-      "rms": 0.13247764217000857,
-      "maxSampleStep": 0.06921450234949589
+      "peak": 0.7474581599235535,
+      "rms": 0.1581258854446613,
+      "maxSampleStep": 0.17693914845585823
     },
     "96000-vocoder-glass-w1-m81-x1": {
-      "peak": 0.844002902507782,
-      "rms": 0.3007137678356749,
-      "maxSampleStep": 0.2741587273776531
+      "peak": 0.8769968152046204,
+      "rms": 0.27721523856760055,
+      "maxSampleStep": 0.40272921323776245
     },
     "96000-vocoder-warm-w0-m36-x0": {
-      "peak": 0.6450548768043518,
-      "rms": 0.2230701102599874,
-      "maxSampleStep": 0.007447823882102966
+      "peak": 0.6608438491821289,
+      "rms": 0.20324283957698167,
+      "maxSampleStep": 0.008277267217636108
     },
     "96000-vocoder-warm-w0-m36-x1": {
-      "peak": 0.6476045250892639,
-      "rms": 0.19005471300366178,
-      "maxSampleStep": 0.007419750094413757
+      "peak": 0.6970694065093994,
+      "rms": 0.21628425189920672,
+      "maxSampleStep": 0.009032413363456726
     },
     "96000-vocoder-warm-w0-m81-x0": {
-      "peak": 0.6673020124435425,
-      "rms": 0.23981789535109968,
-      "maxSampleStep": 0.07299979217350483
+      "peak": 0.5867669582366943,
+      "rms": 0.20323887126080015,
+      "maxSampleStep": 0.05825570225715637
     },
     "96000-vocoder-warm-w0-m81-x1": {
-      "peak": 0.738873302936554,
-      "rms": 0.23788412104714404,
-      "maxSampleStep": 0.08932099863886833
+      "peak": 0.7945646643638611,
+      "rms": 0.27644040364923733,
+      "maxSampleStep": 0.11743240477517247
     },
     "96000-vocoder-warm-w1-m36-x0": {
-      "peak": 0.7468295097351074,
-      "rms": 0.1862448010061279,
-      "maxSampleStep": 0.053246378898620605
+      "peak": 0.7840014100074768,
+      "rms": 0.2007331862483113,
+      "maxSampleStep": 0.03744053840637207
     },
     "96000-vocoder-warm-w1-m36-x1": {
-      "peak": 0.7296180129051208,
-      "rms": 0.17747708800029174,
-      "maxSampleStep": 0.12987659126520157
+      "peak": 0.8434514999389648,
+      "rms": 0.2310026628749412,
+      "maxSampleStep": 0.19674315303564072
     },
     "96000-vocoder-warm-w1-m81-x0": {
-      "peak": 0.5371861457824707,
-      "rms": 0.17592131174979622,
-      "maxSampleStep": 0.07282736524939537
+      "peak": 0.45122581720352173,
+      "rms": 0.14085172316535047,
+      "maxSampleStep": 0.04846910620108247
     },
     "96000-vocoder-warm-w1-m81-x1": {
-      "peak": 0.7086933255195618,
-      "rms": 0.19795367263605973,
-      "maxSampleStep": 0.16848521679639816
+      "peak": 0.8044028878211975,
+      "rms": 0.2789172922139762,
+      "maxSampleStep": 0.27454568445682526
     }
   },
+  "articulationMethod": "Identical controls, gate opens at 0.4 s after controls settle; dry and space=0.55; vocoder uses one sustained synthetic vowel without syllabic amplitude modulation. Each glass partial must decay; held note never becomes a pad floor.",
+  "heldArticulation": {
+    "ambient-moon-space0": {
+      "earlyRms": 0.011767550968580908,
+      "bodyRms": 0.07315966818683527,
+      "lateRms": 0.11257815542723189,
+      "earlyToBodyRatio": 0.16084751694784782,
+      "lateToAttackDb": 8.65239908734804
+    },
+    "ambient-glass-space0": {
+      "earlyRms": 0.17592935700457996,
+      "bodyRms": 0.07512608726801064,
+      "lateRms": 0,
+      "earlyToBodyRatio": 2.341787831661669,
+      "lateToAttackDb": -383.48641515807253
+    },
+    "ambient-warm-space0": {
+      "earlyRms": 0.08212938539243769,
+      "bodyRms": 0.08899502455698917,
+      "lateRms": 0.09109001849460467,
+      "earlyToBodyRatio": 0.9228536741382102,
+      "lateToAttackDb": 0.4960603289080888
+    },
+    "ambient-moon-space0.55": {
+      "earlyRms": 0.010742407237139248,
+      "bodyRms": 0.07421285926874335,
+      "lateRms": 0.11909882193967102,
+      "earlyToBodyRatio": 0.1447512916627872,
+      "lateToAttackDb": 9.47072992562481
+    },
+    "ambient-glass-space0.55": {
+      "earlyRms": 0.16124629504745278,
+      "bodyRms": 0.07061621201163729,
+      "lateRms": 1.1786379784701507e-12,
+      "earlyToBodyRatio": 2.283417510710996,
+      "lateToAttackDb": -221.34221603892934
+    },
+    "ambient-warm-space0.55": {
+      "earlyRms": 0.07499676012162944,
+      "bodyRms": 0.08161000674021555,
+      "lateRms": 0.08352098791942886,
+      "earlyToBodyRatio": 0.9189652484696186,
+      "lateToAttackDb": 0.5086446329736419
+    },
+    "vocoder-moon-space0": {
+      "earlyRms": 0.008821869297020493,
+      "bodyRms": 0.05314380075524344,
+      "lateRms": 0.15825162970090625,
+      "earlyToBodyRatio": 0.16599996935955097,
+      "lateToAttackDb": 15.492109627289118
+    },
+    "vocoder-glass-space0": {
+      "earlyRms": 0.2691956617063736,
+      "bodyRms": 0.0952220873965048,
+      "lateRms": 0,
+      "earlyToBodyRatio": 2.8270296216616506,
+      "lateToAttackDb": -386.8776883754824
+    },
+    "vocoder-warm-space0": {
+      "earlyRms": 0.1344531966462938,
+      "bodyRms": 0.14422253133247856,
+      "lateRms": 0.19711282601808153,
+      "earlyToBodyRatio": 0.9322620772501673,
+      "lateToAttackDb": 3.2667941875957567
+    },
+    "vocoder-moon-space0.55": {
+      "earlyRms": 0.008035049742203712,
+      "bodyRms": 0.052586297341687516,
+      "lateRms": 0.15977256672401186,
+      "earlyToBodyRatio": 0.15279740442638026,
+      "lateToAttackDb": 15.994208788693356
+    },
+    "vocoder-glass-space0.55": {
+      "earlyRms": 0.2488484810308773,
+      "bodyRms": 0.09078189140210409,
+      "lateRms": 1.055587582828408e-12,
+      "earlyToBodyRatio": 2.7411687197465646,
+      "lateToAttackDb": -225.9172206872192
+    },
+    "vocoder-warm-space0.55": {
+      "earlyRms": 0.12309026286759851,
+      "bodyRms": 0.13248750446612698,
+      "lateRms": 0.18134566845835154,
+      "earlyToBodyRatio": 0.9290707328483868,
+      "lateToAttackDb": 3.298517425144541
+    }
+  },
+  "glassSyllables": {
+    "recurringSpeechRms": 0.1374398907616601,
+    "sustainedVowelRms": 0
+  },
   "demoModulator": {
-    "peak": 0.6282371282577515,
-    "rms": 0.1034251146089359,
-    "maxSampleStep": 0.13068412244319916
+    "peak": 0.5428866744041443,
+    "rms": 0.10761643932820801,
+    "maxSampleStep": 0.09373672376386821
   }
 }

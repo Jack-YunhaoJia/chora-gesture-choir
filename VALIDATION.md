@@ -2,6 +2,15 @@
 
 日期：2026-09-29。环境：macOS、Node.js 25.9、Chromium、Vite 6.4。自动回归使用合成设备；用户报告镜头问题后，已按其请求在当前浏览器开启真实摄像头进行连接验证，详见最新记录。
 
+## 2026-09-29 音色进一步分化与左腕四区
+
+- 用户要求拉开三种声音，并把左腕改为减/小/大/增四区、默认大和弦。现默认大三和弦；镜像画面分界−30°/−10°/+25°，每个分界3°缓冲并保持140ms确认。回中归大，关闭开关固定当前性质；固定四种性质、顺阶、七和弦及右手配器仍可选。手离镜或重入未确认期间静音，屏幕注明保留的和弦。
+- 全套48项自动测试通过；四种性质覆盖12调性、三/七和弦与配器音列、横竖画面及角色交换。当前页面71项合成关节→解释器→main断言通过；初始C/E/G/C、四区音高/名称/高亮、回中、锁定、交换、丢手重入、试听固定一致。1440px/390px无溢出，未请求音频或设备。原始证据`output/playwright/four-zone-validation-ui-*`；这是手工关节集成检查，不是MediaPipe真人识别率。
+- 月面合唱使用620ms慢起、持续元音漂移；玻璃花园所有泛音有限衰减、没有持续底层，Vocoder额外由输入幅度上升敲击；暖流簧风9ms快起并保持干燥脉冲/八度风琴。源码重新编译Faust 2.89.2，WASM 77,943字节，更新六段同条件试听。
+- 干声Ambient起音15–75ms/音体350–650ms RMS比为月面0.161、玻璃2.342、暖流0.923。长按同一和弦、相同space=0.55且持续合成元音，4.5–5.5s玻璃Ambient/Vocoder RMS约1.18e−12/1.06e−12，其他音色保持非零持续声。新输入音节无需和弦重奏消息也能再次敲击玻璃；不是文字/音素识别。
+- 六组合腕部暗/中/亮频谱改变，中立和独立编译旁通逐样本一致，实际基频最大变化0.0377音分。144组44.1/48/96kHz×模式×预设×腕端点×音区×旋钮边界均有限非零，最高峰0.876997；关闭声部/静音输入为0，统一静音、切换和重奏通过。完整方法与数字见`docs/sound-design.md`和`public/audio/demos/report.json`。
+- TypeScript及Pages子路径正式打包通过。正式主包`index-D-qWWKKt.js`在独立预览服务器的真实AudioWorklet通过六组合发声、长按持续/衰减、明确重奏、右腕暗亮、底色/音高/声部保持、静音和停止释放检查；无console/page错误。玻璃两模式晚段RMS接近0，月面/暖流保持持续声；腕亮/暗质心比1.55–3.29。使用固定合成MediaStream输入、扬声器零增益隔离，未采真实设备。13项核心与试听资源SHA256一致、六段样本11.8秒；证据`output/playwright/release-0929-local-*.json`。增量公网结果待部署后记录。
+
 ## 2026-09-29 GitHub Pages公网发布验收
 
 - 用户已确认公开源码和网页，公开仓库：[Jack-YunhaoJia/chora-gesture-choir](https://github.com/Jack-YunhaoJia/chora-gesture-choir)；分享地址：[CHORA](https://jack-yunhaojia.github.io/chora-gesture-choir/)。提交`95024fb`的[Actions运行36584902920](https://github.com/Jack-YunhaoJia/chora-gesture-choir/actions/runs/36584902920)build/deploy均成功，原始日志45 tests/45 pass/0 fail，Faust 2.89.2编译74,616字节。

@@ -1,4 +1,4 @@
-import { GESTURE_CHORD_STYLES, type GestureChordStyle } from '../harmony';
+import { GESTURE_CHORD_STYLES, type ChordQuality, type GestureChordStyle } from '../harmony';
 import type { FingerMask, GestureFrame, Handedness, TrackedHand, VoiceMask } from '../types';
 import { absentGesture, mapTrackedHandLandmarks, type Landmark } from './gesture';
 
@@ -130,23 +130,40 @@ export class RightHandModifierDebouncer {
   }
 }
 
-/** CHORA's own roll dead band: approximately ±12° in the mirrored preview. */
-export const MINOR_TILT_THRESHOLD = 0.4;
-export const MAJOR_TILT_THRESHOLD = 0.6;
-type ChordMode = 'major' | 'minor';
+/** Nominal regions in the mirrored preview; a relaxed upright hand is major. */
+export const CHORD_TILT_BOUNDARIES_DEGREES = [-30, -10, 25] as const;
+export const CHORD_TILT_HYSTERESIS_DEGREES = 3;
+export const CHORD_TILT_ZONES: readonly { quality: ChordQuality; minDegrees: number; maxDegrees: number }[] = [
+  { quality: 'diminished', minDegrees: -60, maxDegrees: CHORD_TILT_BOUNDARIES_DEGREES[0] },
+  { quality: 'minor', minDegrees: CHORD_TILT_BOUNDARIES_DEGREES[0], maxDegrees: CHORD_TILT_BOUNDARIES_DEGREES[1] },
+  { quality: 'major', minDegrees: CHORD_TILT_BOUNDARIES_DEGREES[1], maxDegrees: CHORD_TILT_BOUNDARIES_DEGREES[2] },
+  { quality: 'augmented', minDegrees: CHORD_TILT_BOUNDARIES_DEGREES[2], maxDegrees: 60 },
+];
+
+/**
+ * Keep only the committed region within its 3° edge margin. Outside that
+ * margin, choose the actual destination directly, even when crossing several
+ * regions. The center belongs to major, so returning upright resets quality.
+ */
+export function chordQualityFromTilt(tilt: number, previous?: ChordQuality): ChordQuality {
+  if (!Number.isFinite(tilt)) return previous ?? 'major';
+  const degrees = clamp(tilt) * 120 - 60;
+  const stableZone = CHORD_TILT_ZONES.find(zone => zone.quality === previous);
+  if (stableZone && degrees >= stableZone.minDegrees - CHORD_TILT_HYSTERESIS_DEGREES
+    && degrees <= stableZone.maxDegrees + CHORD_TILT_HYSTERESIS_DEGREES) return stableZone.quality;
+  return CHORD_TILT_ZONES.find(zone => degrees < zone.maxDegrees)?.quality ?? 'augmented';
+}
 
 export class ChordModeDebouncer {
-  private stable: ChordMode | undefined;
-  private candidate: ChordMode | undefined;
+  private stable: ChordQuality | undefined;
+  private candidate: ChordQuality | undefined;
   private candidateSince = 0;
 
   reset(): void { this.stable = undefined; this.candidate = undefined; this.candidateSince = 0; }
 
-  update(hand: TrackedHand | undefined, timestamp: number): { value?: ChordMode; pending: boolean } {
+  update(hand: TrackedHand | undefined, timestamp: number): { value?: ChordQuality; pending: boolean } {
     if (!hand || hand.fingerCount === 0) { this.reset(); return { pending: false }; }
-    // The dead band keeps the committed mode, not an unconfirmed excursion.
-    const next: ChordMode = hand.tilt < MINOR_TILT_THRESHOLD ? 'minor'
-      : hand.tilt > MAJOR_TILT_THRESHOLD ? 'major' : this.stable ?? 'major';
+    const next = chordQualityFromTilt(hand.tilt, this.stable);
     if (next === this.stable) {
       this.candidate = next;
       this.candidateSince = timestamp;

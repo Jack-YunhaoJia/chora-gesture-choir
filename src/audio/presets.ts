@@ -13,28 +13,28 @@ export const SOUND_PRESETS: Record<SoundPreset, SoundPresetDefinition> = {
     name: '月面合唱',
     subtitle: '缓缓绽开的元音与声场',
     description: {
-      ambient: '柔和起音的合唱铺底，细微漂移与流动共振峰；质感控制元音和空气感。',
-      vocoder: '人声驱动的柔软合唱，圆润载波、舒缓音节与扩散尾音。',
+      ambient: '缓慢浮现、持续流动的元音合唱；长按逐渐绽开，质感控制人声漂移与共振。',
+      vocoder: '人声驱动的慢起合唱，舒缓音节叠上漂移声部与宽阔尾音。',
     },
-    defaults: { brightness: 0.52, space: 0.7, texture: 0.58 },
+    defaults: { brightness: 0.48, space: 0.74, texture: 0.68 },
   },
   glass: {
     name: '玻璃花园',
-    subtitle: '清透敲击，停留时仍有余韵',
+    subtitle: '清脆敲击，自然落入安静',
     description: {
-      ambient: '换和弦时响起玻璃般的 FM 琴音，落入持续泛音；质感控制敲击的金属光泽。',
-      vocoder: '清晰敏捷的水晶人声，明亮 FM 载波与短促音节，保留唱词轮廓。',
+      ambient: '换和弦或重按时敲响玻璃钟琴，长按自然衰减；质感控制金属泛音与余韵。',
+      vocoder: '人声音节唤起短促玻璃敲击；换和弦或重按可重奏，持续元音会自然衰减。',
     },
-    defaults: { brightness: 0.68, space: 0.5, texture: 0.52 },
+    defaults: { brightness: 0.78, space: 0.27, texture: 0.62 },
   },
   warm: {
     name: '暖流簧风',
-    subtitle: '贴近身体的簧片与柔和饱和',
+    subtitle: '干燥近景的簧片与管风琴',
     description: {
-      ambient: '温暖簧片与柔和脉冲，起音直接、重心靠前；质感增加木质谐波和呼吸起伏。',
-      vocoder: '浓密的模拟簧片人声，中频饱满、音节紧凑，带少量饱和质感。',
+      ambient: '直接起音的簧片与八度管风琴，长按稳定持续；质感增加脉冲厚度与轻微饱和。',
+      vocoder: '贴近前景的簧片人声，清楚的脉冲谐波与紧凑音节，保留持续发声。',
     },
-    defaults: { brightness: 0.43, space: 0.36, texture: 0.48 },
+    defaults: { brightness: 0.56, space: 0.1, texture: 0.64 },
   },
 };
 

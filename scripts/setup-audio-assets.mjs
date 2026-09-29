@@ -54,7 +54,7 @@ sequence.push({ time: 10.16, values: { voice0: 0, voice1: 0, voice2: 0, voice3: 
 
 // Same deterministic synthetic /a/-/u/-/e/ vowel for EVERY vocoder comparison.
 // It is a source fixture, not a recording or a claim of real-singing quality.
-function syntheticVowel(seconds) {
+function syntheticVowel(seconds, syllables = true) {
   const data = new Float32Array(Math.ceil(rate * seconds));
   let peak = 0;
   for (let n = 0; n < data.length; n++) {
@@ -63,7 +63,7 @@ function syntheticVowel(seconds) {
     const f2 = 1430 + 560 * Math.sin(2 * Math.PI * 0.11 * t + 0.5);
     const envelope = Math.min(1, Math.max(0, (t - 0.1) / 0.07))
       * Math.min(1, Math.max(0, (10.15 - t) / 0.12))
-      * (0.18 + 0.82 * Math.max(0, Math.sin(2 * Math.PI * 0.87 * t)));
+      * (syllables ? 0.18 + 0.82 * Math.max(0, Math.sin(2 * Math.PI * 0.87 * t)) : 1);
     let sample = 0;
     for (let h = 1; h <= 45; h++) {
       const hz = 147 * h;
@@ -129,9 +129,9 @@ function fft(real, imag) {
     }
   }
 }
-function spectrum(audio) {
+function spectrum(audio, windows = [0.6, 1.2, 1.9, 2.7, 3.4]) {
   const size = 8192, bins = new Float64Array(size / 2);
-  for (const t of [0.6, 1.2, 1.9, 2.7, 3.4]) {
+  for (const t of windows) {
     const offset = Math.floor(t * rate), real = new Float64Array(size), imag = new Float64Array(size);
     for (let i = 0; i < size; i++) real[i] = (audio[0][offset + i] + audio[1][offset + i]) * 0.5
       * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / (size - 1)));
@@ -162,7 +162,7 @@ function normalizedDifference(left, right, start = Math.floor(rate * 0.5), end =
 // unchanged frequency parameter messages. One isolated voice avoids ambiguous
 // chord/harmonic peaks; all three wrist positions use the same signal fixture.
 function fundamental(audio, expectedHz) {
-  const size = 65536, offset = rate * 2, real = new Float64Array(size), imag = new Float64Array(size);
+  const size = 16384, offset = Math.floor(rate * 0.16), real = new Float64Array(size), imag = new Float64Array(size);
   for (let i = 0; i < size; i++) real[i] = (audio[0][offset + i] + audio[1][offset + i]) * 0.5
     * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / (size - 1)));
   fft(real, imag);
@@ -196,6 +196,8 @@ const report = {
   audition: { duration, chords: ['Cmaj7', 'Am7', 'Fmaj7', 'G7'], chordSeconds: [0.16, 2.66, 5.16, 7.66], muteSeconds: 10.16 },
   variants: {}, pairwiseNormalizedDifference: {}, pairwiseBandEnergyDistance: {}, silence: {}, extremes: {}, transitions: {}, sampleRates: {}, textureControl: {}, articulation: {},
   wristTone: {}, wristExtremes: {},
+  articulationMethod: "Identical controls, gate opens at 0.4 s after controls settle; dry and space=0.55; vocoder uses one sustained synthetic vowel without syllabic amplitude modulation. Each glass partial must decay; held note never becomes a pad floor.",
+  heldArticulation: {},
 };
 const steady = {};
 for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) {
@@ -241,6 +243,7 @@ for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) {
     if (distance < 0.05) throw new Error(`${mode} ${ids[i]}/${ids[j]} lacks a measurable spectral difference`);
   }
 }
+console.log('Fixed controls:', JSON.stringify(report.variants));
 // Fixed dry signals isolate wrist colour from room tails, input changes and
 // loudness normalization. Centre is also compared with an independently
 // compiled version that bypasses only the new colour stage.
@@ -254,14 +257,15 @@ for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) for (const [pres
   const tones = {};
   for (const [label, wristTone] of [['dark', 0], ['neutral', 0.5], ['bright', 1]]) {
     const audio = await render({ values: { ...values, wristTone } });
-    const stats = { ...energyStats(audio, rate / 2), ...spectrum(audio) };
+    const stats = { ...energyStats(audio, Math.floor(rate * 0.01), Math.floor(rate * 0.85)),
+      ...spectrum(audio, [0.02, 0.10, 0.21, 0.39, 0.63]) };
     tones[label] = { audio, stats };
   }
   const bypass = await render({ values, instrument: wristBypass, omitParameters: ['wristTone'] });
   const stats = report.wristTone[key] = {
     dark: tones.dark.stats, neutral: tones.neutral.stats, bright: tones.bright.stats,
-    darkToBrightNormalizedDifference: normalizedDifference(tones.dark.audio, tones.bright.audio),
-    neutralBypassNormalizedDifference: normalizedDifference(tones.neutral.audio, bypass),
+    darkToBrightNormalizedDifference: normalizedDifference(tones.dark.audio, tones.bright.audio, Math.floor(rate * 0.02), Math.floor(rate * 0.85)),
+    neutralBypassNormalizedDifference: normalizedDifference(tones.neutral.audio, bypass, Math.floor(rate * 0.02), Math.floor(rate * 0.85)),
     darkToNeutralDb: 20 * Math.log10(tones.dark.stats.rms / tones.neutral.stats.rms),
     brightToNeutralDb: 20 * Math.log10(tones.bright.stats.rms / tones.neutral.stats.rms),
   };
@@ -271,7 +275,7 @@ for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) for (const [pres
   if (stats.neutral.spectralCentroidHz < stats.dark.spectralCentroidHz * 1.1
       || stats.bright.spectralCentroidHz < stats.neutral.spectralCentroidHz * 1.08
       || stats.brightToDarkHighBandRatio < 12)
-    throw new Error(`${key} wrist does not sufficiently change spectral balance`);
+    throw new Error(`${key} wrist does not sufficiently change spectral balance: ${JSON.stringify(stats)}`);
   if (Math.abs(stats.darkToNeutralDb) > 4 || Math.abs(stats.brightToNeutralDb) > 3)
     throw new Error(`${key} wrist changes fixed-fixture level too much`);
 
@@ -286,10 +290,11 @@ for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) for (const [pres
 
   const swept = await render({ values, timeline: [
     { time: 0.6, values: { wristTone: 0 } }, { time: 1.35, values: { wristTone: 1 } },
-    { time: 2.2, values: { wristTone: 0.5 } },
+    { time: 2.2, values: { wristTone: 0.5 } }, { time: 3, values: { strike: 1 } },
   ] });
   stats.sweep = energyStats(swept);
-  stats.returnToNeutralNormalizedDifference = normalizedDifference(swept, tones.neutral.audio, Math.floor(3.3 * rate));
+  const neutralRepeated = await render({ values, timeline: [{ time: 3, values: { strike: 1 } }] });
+  stats.returnToNeutralNormalizedDifference = normalizedDifference(swept, neutralRepeated, Math.floor(3.3 * rate), Math.floor(3.7 * rate));
   if (stats.sweep.peak >= 0.9 || stats.sweep.maxSampleStep > 0.22
       || stats.returnToNeutralNormalizedDifference > 0.001)
     throw new Error(`${key} wrist sweep or return to neutral failed: ${JSON.stringify({ sweep: stats.sweep, returnToNeutral: stats.returnToNeutralNormalizedDifference })}`);
@@ -319,20 +324,40 @@ for (const sampleRate of [44100, 48000, 96000]) for (const [mode, vocoder] of [[
       if (stats.peak >= 0.9 || stats.rms < 0.0001) throw new Error(`${key} wrist extreme failed`);
       report.wristExtremes[key] = stats;
     }
-// Open the gate after all controls have settled. Compare the first 15–75 ms
-// with the body, independent of the master's startup fade or chord changes.
-for (const [preset, id] of ids.entries()) {
-  const audio = await render({ values: { preset, space: 0, voice0: 0, voice1: 0, voice2: 0, voice3: 0 }, input: null,
-    timeline: [{ time: 0.4, values: { voice0: 1, voice1: 1, voice2: 1, voice3: 1 } }] });
-  const early = energyStats(audio, Math.floor(rate * 0.415), Math.floor(rate * 0.475)).rms;
-  const body = energyStats(audio, Math.floor(rate * 1.1), Math.floor(rate * 1.4)).rms;
-  const late = energyStats(audio, Math.floor(rate * 3.6), Math.floor(rate * 3.9)).rms;
-  report.articulation[id] = { earlyRms: early, bodyRms: body, lateRms: late, earlyToBodyRatio: early / body };
+// Hold one unchanged chord well beyond the mallet decay. Equal wet settings
+// ensure room tails cannot hide the distinction; a sustained vowel separates
+// a true input-driven syllable retrigger from an artificial repeated source.
+const heldVowel = syntheticVowel(7, false);
+for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) for (const space of [0, 0.55]) {
+  for (const [preset, id] of ids.entries()) {
+    const audio = await render({ values: { preset, vocoder, space, voice0: 0, voice1: 0, voice2: 0, voice3: 0 },
+      input: vocoder ? heldVowel : null, length: rate * 6,
+      timeline: [{ time: 0.4, values: { voice0: 1, voice1: 1, voice2: 1, voice3: 1 } }] });
+    const early = energyStats(audio, Math.floor(rate * 0.415), Math.floor(rate * 0.475)).rms;
+    const body = energyStats(audio, Math.floor(rate * 0.75), Math.floor(rate * 1.05)).rms;
+    const late = energyStats(audio, Math.floor(rate * 4.5), Math.floor(rate * 5.5)).rms;
+    const attackPeak = energyStats(audio, Math.floor(rate * 0.41), Math.floor(rate * 0.75)).rms;
+    const measured = { earlyRms: early, bodyRms: body, lateRms: late, earlyToBodyRatio: early / body,
+      lateToAttackDb: 20 * Math.log10(Math.max(late, 1e-20) / attackPeak) };
+    report.heldArticulation[`${mode}-${id}-space${space}`] = measured;
+    if (mode === 'ambient' && space === 0) report.articulation[id] = measured;
+    if (id === 'glass' && measured.lateToAttackDb > -35)
+      throw new Error(`${mode} glass still contains a held pad at space=${space}: ${JSON.stringify(measured)}`);
+    if (id !== 'glass' && late < 0.007) throw new Error(`${mode} ${id} lost its sustained body`);
+    if (mode === 'ambient' && id === 'moon' && measured.earlyToBodyRatio > 0.25)
+      throw new Error('Choir lost its gradual attack');
+    if (mode === 'ambient' && id === 'warm' && measured.earlyToBodyRatio < 0.85)
+      throw new Error('Reed lost its immediate attack');
+  }
 }
-if (report.articulation.moon.earlyToBodyRatio > 0.4) throw new Error('Choir lost its slow attack');
-if (report.articulation.glass.earlyToBodyRatio < 0.7 || report.articulation.warm.earlyToBodyRatio < 0.6)
-  throw new Error('Glass/reed attack is no longer direct');
-if (report.articulation.glass.lateRms < 0.01) throw new Error('Glass cannot sustain a held chord');
+// Distinct new speech onsets must ring glass again without any note message.
+// A steady source must remain quiet after its first strike.
+const syllabicGlass = await render({ values: { preset: 1, vocoder: 1, space: 0 }, length: rate * 6 });
+const heldGlass = await render({ values: { preset: 1, vocoder: 1, space: 0 }, input: heldVowel, length: rate * 6 });
+report.glassSyllables = { recurringSpeechRms: energyStats(syllabicGlass, rate * 3).rms,
+  sustainedVowelRms: energyStats(heldGlass, rate * 3).rms };
+if (report.glassSyllables.recurringSpeechRms < 0.003 || report.glassSyllables.sustainedVowelRms > 0.0001)
+  throw new Error(`Glass syllable articulation failed: ${JSON.stringify(report.glassSyllables)}`);
 for (const sampleRate of [44100, 96000]) {
   const sampleChecks = {};
   for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) for (const [preset, id] of ids.entries()) {
