@@ -1,0 +1,24 @@
+{
+  "name": "chora-gesture-choir",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "tsx --test tests/*.test.ts",
+    "assets": "node scripts/setup-assets.mjs && node scripts/setup-audio-assets.mjs",
+    "audio:compile": "node scripts/setup-audio-assets.mjs"
+  },
+  "dependencies": {
+    "@grame/faustwasm": "0.18.5",
+    "@mediapipe/tasks-vision": "0.10.32"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.2",
+    "vite": "^6.4.1"
+  }
+}
