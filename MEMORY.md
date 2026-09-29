@@ -3,7 +3,7 @@
 更新：2026-09-29。继续先读本文件、`TODO.md`、`VALIDATION.md`。
 
 - 用户希望制作手势交互声音 Web 作品：摄像头识别双手，为自然演唱控制和弦伴奏；明确 Ambient / Vocoder 两者并重、演奏中可切换。CHORA（掌中的合唱团）仍为暂名。
-- 工程独立于 StyleRAG-Adapter；不把本项目代码、记忆或待办混入毕业研究仓库。2026-09-29用户确认公开源码与网页，已创建公开仓库；GitHub Pages首次部署进行中。
+- 工程独立于 StyleRAG-Adapter；不把本项目代码、记忆或待办混入毕业研究仓库。2026-09-29用户确认公开源码与网页，公开仓库为 `Jack-YunhaoJia/chora-gesture-choir`，[GitHub Pages](https://jack-yunhaojia.github.io/chora-gesture-choir/)已上线。
 - 技术为 Vite + TypeScript、本地 MediaPipe 双手识别、Faust WASM + 静态 AudioWorklet、16频段 Vocoder、四声部、镜头舞台/粒子视图/全屏、键鼠免设备试听。
 - 用户指定 SynthGesture 参考，并要求完整交互分析与更精巧的音色；来源、具体音列及实现差异见 `docs/synthgesture-interaction-analysis.md`、`docs/reference-synthgesture.md`。未听辨参考视频音轨，不声称复制其声音。
 - 左手完整指型选七个级数：I–V保持图示固定指型；VI已校正为食指＋小指，VII再加拇指，取代旧自拟🤙/L。按用户对参考交互的最新反馈，默认开启左腕切大/小，提供明显开关（关闭固定当前性质）；顺阶和固定大/小仍可选择。自由小模式不等于小调顺阶。
@@ -20,5 +20,7 @@
 
 重要会话收尾同步本项目记忆与用户 Obsidian Codex 的 `projects/chora-gesture-choir.md`，只保存简洁可核验项目事实。
 
-- 用户询问快速上传GitHub并形成临时网页；已准备 `.github/workflows/pages.yml` 和 `docs/github-pages.md`，Node24、资源准备/测试/按Pages路径构建，仅发布dist。用户已确认公开，仓库为 `Jack-YunhaoJia/chora-gesture-choir`；首次上传与Pages验收进行中。
-- 本地模拟 `/chora-gesture-choir/` 子路径实际Worklet发声、7项核心模型/声音资源和6段试听加载通过，未采设备。尚未执行GitHub Actions或公网验收。Pages链接不会自动过期，需要主动取消发布。
+- 用户询问快速上传GitHub并形成临时网页；已准备 `.github/workflows/pages.yml` 和 `docs/github-pages.md`，Node24、资源准备/测试/按Pages路径构建，仅发布dist。用户已确认公开，仓库为 `Jack-YunhaoJia/chora-gesture-choir`；部署提交`95024fb`的Actions运行`36584902920`成功。
+- 本地模拟 `/chora-gesture-choir/` 子路径实际Worklet发声、7项核心模型/声音资源和6段试听加载通过，未采设备。GitHub Actions已成功构建和发布，公网HTTPS 200，实际浏览器Ambient/合成输入Vocoder、独立腕部音色、模型初始化与六段试听通过；13项核心/试听资源SHA256与本地一致。停止后context关闭、合成轨道ended、视频释放；不是实体设备/真人识别验收。Pages链接不会自动过期，需要主动取消发布。
+
+- 首次Actions因锁文件使用企业内部npm镜像失败；`95024fb`仅替换98个下载host并加入公开源`.npmrc`，版本与SRI不变。98个公网包逐项SRI一致；本地全新缓存安装、45项测试、模型/音频重建和Pages子路径打包通过。

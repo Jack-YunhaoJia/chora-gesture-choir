@@ -2,12 +2,26 @@
 
 日期：2026-09-29。环境：macOS、Node.js 25.9、Chromium、Vite 6.4。自动回归使用合成设备；用户报告镜头问题后，已按其请求在当前浏览器开启真实摄像头进行连接验证，详见最新记录。
 
+## 2026-09-29 GitHub Pages公网发布验收
+
+- 用户已确认公开源码和网页，公开仓库：[Jack-YunhaoJia/chora-gesture-choir](https://github.com/Jack-YunhaoJia/chora-gesture-choir)；分享地址：[CHORA](https://jack-yunhaojia.github.io/chora-gesture-choir/)。提交`95024fb`的[Actions运行36584902920](https://github.com/Jack-YunhaoJia/chora-gesture-choir/actions/runs/36584902920)build/deploy均成功，原始日志45 tests/45 pass/0 fail，Faust 2.89.2编译74,616字节。
+- 公网HTTPS首页200；HTML/主JS/CSS引用的路径和MIME正确。独立内存下载7项核心资源＋6段试听，13/13 HTTP 200且SHA256与本地public完全一致。模型7,819,105字节，vision WASM 11,453,626字节；六段WAV均11.8秒、正确audio/wav。
+- Playwright直接运行公网生产包，真实Faust AudioWorklet输出通过：Ambient、合成MediaStream输入Vocoder非零且有限；右腕暗/亮/回中均改变频谱，预设底色/音高/配器不变。Esc后context关闭、合成音轨ended；声音接零增益隔离。
+- 浏览器实际MediaPipe通过正常摄像头入口初始化，输入为空白Canvas合成640×480视频，持续读帧，CAMERA LIVE/运行状态正确；停止后视频srcObject清空、所有合成轨道ended、音频context关闭。未请求实体摄像头/麦克风，不是人手识别率或真人歌唱验收。
+- 初轮验收在大资源读取时触发90秒外层超时；独立HTTP完整性检查通过，延长验收脚本等待后实际浏览器资源、模型与试听阶段通过。原始结果和复跑入口位于`output/playwright/public-pages-*.json`与`output/browser/public-pages-run.mjs`，本地输出不提交。
+
+## 2026-09-29 GitHub Pages构建修复
+
+- 首次[Actions运行36583412908](https://github.com/Jack-YunhaoJia/chora-gesture-choir/actions/runs/36583412908)在`npm ci`失败：锁文件依赖下载地址指向企业内部镜像，GitHub runner无法解析该域名；尚未进入声音编译或网页部署。
+- 提交`95024fb`将98个下载地址改为公开`registry.npmjs.org`，保留全部版本与integrity；项目`.npmrc`固定公开源。独立逐包下载核验98/98 HTTP 200且SRI完全一致，无私有依赖。
+- 隔离源码副本＋全新依赖缓存安装成功，45项测试、实际模型下载/Faust编译/六段试听/144组离线边界与Pages子路径构建通过。新编译的公开资源与原工程逐文件相同，只有报告的generatedAt变化。验证目录`output/github-pages-validation/`不提交。
+
 ## 2026-09-29 GitHub Pages发布准备
 
-- `.github/workflows/pages.yml` 已准备，使用官方Pages构建/发布动作（固定已核实提交SHA），Node24，npm ci→assets→test→按Pages base_path打包；只上传dist。尚未在GitHub Actions运行。
-- 当前源码与产物审计无本地凭证/设备录音图像发现；依赖、环境文件和本地测试输出在.gitignore中。公开源码将包含本项目MEMORY/TODO/说明，此可见性待用户确认，尚未创建远程仓库或部署。
+- `.github/workflows/pages.yml` 已准备，使用官方Pages构建/发布动作（固定已核实提交SHA），Node24，npm ci→assets→test→按Pages base_path打包；只上传dist。此节为发布前历史记录；实际GitHub Actions和公网结果见上方最新验收。
+- 当前源码与产物审计无本地凭证/设备录音图像发现；依赖、环境文件和本地测试输出在.gitignore中。公开源码将包含本项目MEMORY/TODO/说明，发布前待确认；用户随后确认公开，当前状态见上方最新记录。
 - 本地以 `/chora-gesture-choir/` 构建，独立静态服务器测试通过：真实生产AudioWorklet RMS约0.0917，7项WASM/模型/声音/图标资源200且非空，6段试听可读时长11.8s，所有URL保持仓库子路径；结束context closed。无设备请求，输出零增益隔离。证据 `output/playwright/pages-check.json`。
-- 该检查不等于公网访问或GitHub构建成功；完成发布后仍需验收实际URL。
+- 该检查不等于公网访问或GitHub构建成功；实际URL已按上方最新记录验收。
 
 ## 2026-09-29 双腕倾斜可见性与声音修复
 
@@ -78,4 +92,4 @@
 
 ## 尚未验证
 
-真人演唱音色、不同手形/手指联动/遮挡/光线的识别率、实体设备端到端延迟、演出音响链路、长时间持续使用、Safari 和手机性能。当前结果不能替代这些检查。网页尚未发布到公网。
+真人演唱音色、不同手形/手指联动/遮挡/光线的识别率、实体设备端到端延迟、演出音响链路、长时间持续使用、Safari 和手机性能。当前结果不能替代这些检查。网页已发布到公网；实体设备、真人演唱和多浏览器性能仍未完成验收。

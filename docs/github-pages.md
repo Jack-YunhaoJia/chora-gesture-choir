@@ -7,14 +7,16 @@
 - **公开源码仓库 + Pages**：最直接；仓库源码、说明及项目记忆文件对所有人可见，网页也公开。
 - **私有源码仓库 + Pages**：取决于 GitHub 账户计划是否支持；源码私有不表示 Pages 网页私有。也可保留私有源码，另把构建产物发布到公开的演示仓库或其他静态托管服务。
 
-用户已确认公开源码与网页。公开仓库：[Jack-YunhaoJia/chora-gesture-choir](https://github.com/Jack-YunhaoJia/chora-gesture-choir)。首次发布进行中；工作流自动读取 Pages 的路径。
+用户已确认公开源码与网页。公开仓库：[Jack-YunhaoJia/chora-gesture-choir](https://github.com/Jack-YunhaoJia/chora-gesture-choir)。已上线：[打开 CHORA](https://jack-yunhaojia.github.io/chora-gesture-choir/)。工作流自动读取 Pages 的路径。
 
-## 首次发布
+## 已完成的发布配置
 
-1. 把本目录作为独立 Git 仓库上传，主分支用 `main`，先确定仓库可见性。
+1. 本项目已作为独立公开 Git 仓库上传，主分支为 `main`。
 2. 仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
 3. 在 **Actions → Publish CHORA to GitHub Pages → Run workflow** 启动；以后推送 `main` 自动更新。
 4. 成功后，在部署环境或 **Settings → Pages** 获取实际地址。项目站通常是 `https://<账号>.github.io/<仓库名>/`。
+
+项目 `.npmrc` 固定公开 npm 源，锁文件中的包下载地址也使用 `registry.npmjs.org`，避免 GitHub 构建依赖企业内网。
 
 工作流在 `.github/workflows/pages.yml`，使用 Node.js 24、锁文件安装依赖，准备本地模型与 Faust 音频后运行测试、按 Pages 子路径构建，只发布 `dist/`。首次联网下载模型，实际耗时受 GitHub 排队与下载速度影响。
 

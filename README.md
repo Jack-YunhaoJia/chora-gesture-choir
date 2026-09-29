@@ -2,6 +2,8 @@
 
 一件用双手指挥和弦的浏览器声音作品。参考 SynthGesture 的演唱伴奏方式：默认左手指型选根音、手腕侧倾切大／小和弦，右手抬高管力度、侧倾扫音色。Ambient 合成器为自然演唱铺底；Vocoder 可把人声频谱融入和弦。两种模式可在演奏中切换。
 
+**在线体验：[打开 CHORA](https://jack-yunhaojia.github.io/chora-gesture-choir/)** · [公开源码](https://github.com/Jack-YunhaoJia/chora-gesture-choir)
+
 ## 开始体验
 
 安装 Node.js 22 或更新版本，在本目录运行：
@@ -113,4 +115,4 @@ npm run preview
 
 ## GitHub 临时分享
 
-已提供 GitHub Pages 自动发布配置，推送 `main` 后可自动构建并上线 HTTPS 网页。首次需创建仓库并在 Settings → Pages 选择 GitHub Actions；操作与下线方法见 [GitHub Pages发布说明](docs/github-pages.md)。已创建[公开源码仓库](https://github.com/Jack-YunhaoJia/chora-gesture-choir)，首次Pages发布进行中。
+已发布到 [GitHub Pages](https://jack-yunhaojia.github.io/chora-gesture-choir/)，推送 `main` 后会自动构建并更新网页。公开源码仓库为 [Jack-YunhaoJia/chora-gesture-choir](https://github.com/Jack-YunhaoJia/chora-gesture-choir)。链接不会自动到期，演示结束后可主动下线；操作见 [GitHub Pages发布说明](docs/github-pages.md)。
