@@ -1,4 +1,5 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import {
   instantiateFaustModuleFromFile, LibFaust, FaustCompiler, FaustMonoDspGenerator,
@@ -54,13 +55,13 @@ sequence.push({ time: 10.16, values: { voice0: 0, voice1: 0, voice2: 0, voice3: 
 
 // Same deterministic synthetic /a/-/u/-/e/ vowel for EVERY vocoder comparison.
 // It is a source fixture, not a recording or a claim of real-singing quality.
-function syntheticVowel(seconds, syllables = true) {
+function syntheticVowel(seconds, syllables = true, movingFormants = true) {
   const data = new Float32Array(Math.ceil(rate * seconds));
   let peak = 0;
   for (let n = 0; n < data.length; n++) {
     const t = n / rate, phase = 2 * Math.PI * 147 * t;
-    const f1 = 570 + 210 * Math.sin(2 * Math.PI * 0.16 * t);
-    const f2 = 1430 + 560 * Math.sin(2 * Math.PI * 0.11 * t + 0.5);
+    const f1 = movingFormants ? 570 + 210 * Math.sin(2 * Math.PI * 0.16 * t) : 650;
+    const f2 = movingFormants ? 1430 + 560 * Math.sin(2 * Math.PI * 0.11 * t + 0.5) : 1550;
     const envelope = Math.min(1, Math.max(0, (t - 0.1) / 0.07))
       * Math.min(1, Math.max(0, (10.15 - t) / 0.12))
       * (syllables ? 0.18 + 0.82 * Math.max(0, Math.sin(2 * Math.PI * 0.87 * t)) : 1);
@@ -190,14 +191,16 @@ function wav(audio) {
 
 const report = {
   generatedAt: new Date().toISOString(), sampleRate: rate,
+  sourceSha256: createHash('sha256').update(source).digest('hex'),
+  wasmSha256: createHash('sha256').update(result.factory.code).digest('hex'),
   method: 'Actual compiled Faust WASM; all presets have identical pitch, controls, volume and source input. Raw WAVs are not individually normalized. Measurements prove DSP differences and bounds, not perceptual quality or real-singer intelligibility.',
   source: 'Deterministic synthetic /a/-/u/-/e/ vowel, 147 Hz fundamental; not human speech or microphone recording.',
   controls: common,
   audition: { duration, chords: ['Cmaj7', 'Am7', 'Fmaj7', 'G7'], chordSeconds: [0.16, 2.66, 5.16, 7.66], muteSeconds: 10.16 },
   variants: {}, pairwiseNormalizedDifference: {}, pairwiseBandEnergyDistance: {}, silence: {}, extremes: {}, transitions: {}, sampleRates: {}, textureControl: {}, articulation: {},
   wristTone: {}, wristExtremes: {},
-  articulationMethod: "Identical controls, gate opens at 0.4 s after controls settle; dry and space=0.55; vocoder uses one sustained synthetic vowel without syllabic amplitude modulation. Each glass partial must decay; held note never becomes a pad floor.",
-  heldArticulation: {},
+  articulationMethod: "Identical controls, gate opens at 0.4 s after controls settle; dry and space=0.55; vocoder uses one sustained synthetic vowel without syllabic amplitude modulation. Ambient glass must decay; all microphone carriers must sustain and start promptly.",
+  heldArticulation: {}, weakMicrophone: {}, vocoderReentry: {},
 };
 const steady = {};
 for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) {
@@ -341,23 +344,80 @@ for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) for (const space
       lateToAttackDb: 20 * Math.log10(Math.max(late, 1e-20) / attackPeak) };
     report.heldArticulation[`${mode}-${id}-space${space}`] = measured;
     if (mode === 'ambient' && space === 0) report.articulation[id] = measured;
-    if (id === 'glass' && measured.lateToAttackDb > -35)
+    if (mode === 'ambient' && id === 'glass' && measured.lateToAttackDb > -35)
       throw new Error(`${mode} glass still contains a held pad at space=${space}: ${JSON.stringify(measured)}`);
-    if (id !== 'glass' && late < 0.007) throw new Error(`${mode} ${id} lost its sustained body`);
+    if ((mode === 'vocoder' || id !== 'glass') && late < 0.007)
+      throw new Error(`${mode} ${id} lost its sustained body`);
+    if (mode === 'vocoder' && measured.earlyToBodyRatio < 0.65)
+      throw new Error(`${id} microphone carrier lost its prompt attack`);
     if (mode === 'ambient' && id === 'moon' && measured.earlyToBodyRatio > 0.25)
       throw new Error('Choir lost its gradual attack');
     if (mode === 'ambient' && id === 'warm' && measured.earlyToBodyRatio < 0.85)
       throw new Error('Reed lost its immediate attack');
   }
 }
-// Distinct new speech onsets must ring glass again without any note message.
-// A steady source must remain quiet after its first strike.
+// Syllabic and held input both remain audible. Explicit rearticulation adds
+// a glass transient above the continuous carrier, rather than gating speech.
 const syllabicGlass = await render({ values: { preset: 1, vocoder: 1, space: 0 }, length: rate * 6 });
 const heldGlass = await render({ values: { preset: 1, vocoder: 1, space: 0 }, input: heldVowel, length: rate * 6 });
 report.glassSyllables = { recurringSpeechRms: energyStats(syllabicGlass, rate * 3).rms,
   sustainedVowelRms: energyStats(heldGlass, rate * 3).rms };
-if (report.glassSyllables.recurringSpeechRms < 0.003 || report.glassSyllables.sustainedVowelRms > 0.0001)
+const heldGlassRepeat = await render({ values: { preset: 1, vocoder: 1, space: 0 }, input: heldVowel, length: rate * 6,
+  timeline: [{ time: 3, values: { strike: 1 } }] });
+report.glassSyllables.retriggerNormalizedDifference = normalizedDifference(heldGlassRepeat, heldGlass, rate * 3, Math.floor(rate * 3.5));
+if (report.glassSyllables.recurringSpeechRms < 0.003 || report.glassSyllables.sustainedVowelRms < 0.007
+    || report.glassSyllables.retriggerNormalizedDifference < 0.02)
   throw new Error(`Glass syllable articulation failed: ${JSON.stringify(report.glassSyllables)}`);
+
+// Real microphone levels are often below the original normalized audition.
+// Exercise the DSP at three input RMS levels, with no trim and with the UI's
+// default +12 dB pre-analysis trim simulated at the input. This is not a test
+// of the browser GainNode: its integration is checked separately.
+const fixedVowel = syntheticVowel(6, false, false);
+const fixedRms = energyStats([fixedVowel], rate, rate * 5).rms;
+for (const [preset, id] of ids.entries()) for (const inputRms of [0.003, 0.01, 0.03]) {
+  const fixture = Float32Array.from(fixedVowel, value => value * inputRms / fixedRms);
+  const levels = {};
+  for (const trimDb of [0, 12]) {
+    const input = Float32Array.from(fixture, value => value * 10 ** (trimDb / 20));
+    const audio = await render({ values: { preset, vocoder: 1, space: 0, master: 0.44, expression: 0.65 }, input, length: rate * 6 });
+    const checked = energyStats(audio);
+    const lateRms = energyStats(audio, rate * 3, rate * 5).rms;
+    const windows = Array.from({ length: 20 }, (_, i) => energyStats(audio,
+      Math.floor(rate * (3 + i * 0.1)), Math.floor(rate * (3.1 + i * 0.1))).rms);
+    levels[trimDb] = { ...checked, lateRms, minHeldWindowRms: Math.min(...windows) };
+    if (checked.peak >= 0.9 || lateRms < inputRms * 0.5 || Math.min(...windows) < lateRms * 0.2)
+      throw new Error(`${id} weak microphone input drops out at RMS ${inputRms}, trim ${trimDb} dB: ${JSON.stringify(levels[trimDb])}`);
+  }
+  levels.trimGainRatio = levels[12].lateRms / levels[0].lateRms;
+  if (levels.trimGainRatio < 2) throw new Error(`${id} input trim fails to lift weak input at RMS ${inputRms}`);
+  report.weakMicrophone[`${id}-${inputRms}`] = levels;
+}
+
+// Reproduce a 200 ms gesture loss while singing, including the engine's master
+// fade. Compare against uninterrupted output at identical phase and input so
+// the choir's drift and changing formants cannot hide a slow recovery.
+for (const [preset, id] of ids.entries()) {
+  const values = { preset, vocoder: 1, space: 0 };
+  const uninterrupted = await render({ values, input: fixedVowel, length: rate * 4 });
+  const interrupted = await render({ values, input: fixedVowel, length: rate * 4, timeline: [
+    { time: 1.8, values: { voice0: 0, voice1: 0, voice2: 0, voice3: 0, master: 0 } },
+    { time: 2, values: { voice0: 1, voice1: 1, voice2: 1, voice3: 1, master: common.master } },
+  ] });
+  const relativeRms = (start, end) => energyStats(interrupted, Math.floor(rate * start), Math.floor(rate * end)).rms
+    / energyStats(uninterrupted, Math.floor(rate * start), Math.floor(rate * end)).rms;
+  const stats = { ...energyStats(interrupted), uninterruptedMaxSampleStep: energyStats(uninterrupted).maxSampleStep,
+    mutedRatio: relativeRms(1.96, 2),
+    recovery80to200msRatio: relativeRms(2.08, 2.2), recovery200to400msRatio: relativeRms(2.2, 2.4) };
+  // A bright sustained carrier already has steep adjacent samples. Compare
+  // against that actual waveform as well as a fixed floor; glass reentry also
+  // includes its intentional mallet transient, which may raise local slope.
+  if (stats.mutedRatio > 0.02 || stats.recovery80to200msRatio < 0.65
+      || stats.recovery200to400msRatio < 0.85 || stats.peak >= 0.9
+      || stats.maxSampleStep > Math.max(0.22, stats.uninterruptedMaxSampleStep * 1.2))
+    throw new Error(`${id} microphone failed 200 ms gesture reentry: ${JSON.stringify(stats)}`);
+  report.vocoderReentry[id] = stats;
+}
 for (const sampleRate of [44100, 96000]) {
   const sampleChecks = {};
   for (const [mode, vocoder] of [['ambient', 0], ['vocoder', 1]]) for (const [preset, id] of ids.entries()) {

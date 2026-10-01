@@ -6,7 +6,7 @@ import { mapWristTone } from './vision/gesture';
 import { CHORD_TILT_BOUNDARIES_DEGREES } from './vision/twohand';
 import { CHORDS, CHORD_QUALITIES, CHORD_QUALITY_NAMES, GESTURE_STYLE_NAMES, NOTE_NAMES, chordName, frequencies, midiNotes, noteName, positionToChord } from './harmony';
 import { ChoirVisual, drawHand } from './visual';
-import type { GestureFrame, PerformanceState, SoundMode, SoundPreset } from './types';
+import type { AudioMetrics, GestureFrame, PerformanceState, SoundMode, SoundPreset } from './types';
 import type { ChordQuality, ChordVoicing, HarmonyMode, HarmonyOptions } from './harmony';
 
 const icon = (name:string, size=18) => {
@@ -50,6 +50,14 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           ${SOUND_PRESET_IDS.map((id,i)=>`<button class="preset ${i===0?'selected':''}" data-preset="${id}" aria-pressed="${i===0}"><span class="preset-symbol ${id}"></span><span>${SOUND_PRESETS[id].name}<small>${['SLOW CHOIR','STRUCK GLASS','REED ORGAN'][i]}</small></span><span class="preset-dot"></span></button>`).join('')}
         </div>
         <div class="preset-actions"><span id="preset-status">原始配方</span><button id="compare-sounds" class="plain-button">同一和弦对比 ↗</button></div>
+        <section id="vocoder-controls" class="vocoder-controls" hidden aria-label="Vocoder 人声设置">
+          <label for="mic-gain">麦克风增益 <output id="mic-gain-value">+12 dB</output></label>
+          <input id="mic-gain" type="range" min="0" max="24" value="12" step="1"/>
+          <p id="mic-input-status">连接麦克风后，轻声试唱并调整增益。</p>
+          <p id="vocoder-output-status" role="status">等待启动声音</p>
+          <button id="mic-test-button" class="camera-button">只用麦克风试音</button>
+          <p class="mic-test-hint">固定屏幕和弦试唱，无需手势；开启摄像头可返回双手演奏。</p>
+        </section>
         <div class="rule"></div>
         <div class="parameter"><label for="space">空间 <span>SPACE</span><output id="space-value">72%</output></label><input id="space" type="range" min="0" max="100" value="72"/><div class="range-labels"><span>亲密</span><span>无边</span></div></div>
         <div class="parameter"><label for="brightness">明亮度 <span>COLOR</span><output id="brightness-value">55%</output></label><input id="brightness" type="range" min="0" max="100" value="55"/><div class="range-labels"><span>温润</span><span>通透</span></div></div>
@@ -110,6 +118,7 @@ const audio = new AudioEngine();
 const visual = new ChoirVisual($<HTMLCanvasElement>('#resonance'));
 const video = $<HTMLVideoElement>('#camera-video');
 let running = false, starting = false, cameraActive = false, demo = false, muted = false, generation = 0;
+let manualInputOnly = false;
 let selectedChord = 0, key = 0;
 let voicing: ChordVoicing = 'triad';
 let harmonyMode: HarmonyMode | 'gesture' = 'gesture';
@@ -121,15 +130,16 @@ let presetEdited = false;
 let comparisonOpen = false;
 let gestureGate = false, swapped = false;
 let latestGesture: GestureFrame | undefined;
+let cameraDetail = '';
 let cameraPhase = 'stopped', audioReady = false, audioPending = false, audioAttempt = 0;
 let startupHiddenTimer: number | undefined;
 let lastMetrics = 0, handPresent = false, microphoneWasConnected = false;
-const state: PerformanceState = { frequencies:frequencies(0,0,'triad',{mode:'major'}), voices:[true,true,true,true], expression:.65, ...SOUND_PRESETS.moon.defaults, soundPreset:'moon', wristTone:.5, volume:.55, mode:'ambient', active:false };
+const state: PerformanceState = { frequencies:frequencies(0,0,'triad',{mode:'major'}), voices:[true,true,true,true], expression:.65, ...SOUND_PRESETS.moon.defaults, soundPreset:'moon', wristTone:.5, microphoneGainDb:12, volume:.55, mode:'ambient', active:false };
 const tracker = new HandTracker(video, handleGesture, (reason:string) => {
   if (running || starting) { void stop(); message(reason,true); }
-}, status => {
+}, (status, detail?:string) => {
   if(!starting && !running)return;
-  cameraPhase=status;
+  cameraPhase=status;cameraDetail=detail??'';
   cameraActive=status==='preview'||status==='model'||status==='ready';
   renderSession();
 });
@@ -143,6 +153,7 @@ function updateAudio() {
   if(cameraActive)state.wristTone=mapWristTone(gestureColor);
   state.active = running && audioReady && !muted && !comparisonOpen && !document.hidden && (demo || gestureGate);
   audio.update(state);
+  renderVocoderStatus();
   visual.voices = [...state.voices]; visual.brightness = state.wristTone ?? .5; visual.running = state.active;
 }
 function refreshGestureGate() {
@@ -211,6 +222,24 @@ function selectChord(index:number, repeat=false) {
   updateAudio();
   if(repeat)audio.retrigger();
 }
+function renderVocoderStatus(metrics?:AudioMetrics) {
+  const enabled=state.mode==='vocoder';
+  $('#vocoder-controls').hidden=!enabled;
+  if(!enabled)return;
+  const gain=state.microphoneGainDb??12;
+  $('#mic-gain-value').textContent=`+${gain} dB`;
+  const test=$<HTMLButtonElement>('#mic-test-button');test.disabled=micConnecting;
+  test.textContent=micConnecting?'正在连接麦克风…':demo&&audio.microphoneEnabled?'固定和弦试音中':'只用麦克风试音';
+  if(!audio.microphoneEnabled)$('#mic-input-status').classList.remove('input-warning');
+  if(!audio.microphoneEnabled)$('#mic-input-status').textContent=audio.demoModulatorEnabled?'当前为合成试听信号；麦克风尚未连接。':'连接麦克风后，轻声试唱并调整增益。';
+  else if(metrics){
+    const level=metrics.inputDb??-90;
+    const text=metrics.rawInputClipped?'麦克风原始输入过载，请降低设备输入音量。':metrics.inputClipped?'增益过高，请调低麦克风增益。':level < -55?'等待人声；若正在唱，请检查麦克风设备。':level < -35?'输入偏弱，可提高麦克风增益或靠近一些。':'输入已收到，保持当前距离试唱。';
+    $('#mic-input-status').textContent=text;
+    $('#mic-input-status').classList.toggle('input-warning',!!metrics.rawInputClipped||!!metrics.inputClipped);
+  }
+  $('#vocoder-output-status').textContent= !running&&!starting?'等待启动声音':!audioReady?audioPending?'声音准备中…':'声音未就绪，请点击「启用声音」':muted?'已静音，点击音量旁的扬声器恢复':comparisonOpen?'音色对比中，实时人声暂时静音':!state.voices.some(Boolean)?'四个声部均已关闭，请打开至少一个':!audio.microphoneEnabled?(audio.demoModulatorEnabled?'合成信号试音中':'等待麦克风连接'):!demo&&(starting||!gestureGate)?(cameraPhase==='model'?'人声已连接，等待手势模型；可先只用麦克风试音':'人声已连接，等待有效双手姿势；可先只用麦克风试音'):!demo&&state.expression<.15?'右手偏低，抬高手掌可增加输出力度':demo?'固定和弦试音 · 1–7 或点击切换和弦':'双手演奏 · 人声持续跟随当前和弦';
+}
 function renderSound() {
   const preset=SOUND_PRESETS[state.soundPreset ?? 'moon'];
   $('#sound-category').textContent=preset.subtitle;
@@ -242,7 +271,7 @@ function renderSession() {
   $('#camera-overlay-button').innerHTML=`${icon(starting?'stop':'camera',16)} ${starting?'取消连接':'开启摄像头'}`;
   const progress:Record<string,string>={permission:'正在等待摄像头授权，请查看浏览器或系统提示。',preview:'摄像头已连接，正在准备手势识别…',model:'摄像头画面已开启，正在加载手势识别…',ready:'手势识别就绪',stopped:''};
   const status=$('#connection-status');
-  status.textContent=starting?(demo?'正在启动声音…':progress[cameraPhase]||'正在连接摄像头…'):'';
+  status.textContent=starting?(demo?'正在启动声音…':cameraDetail||progress[cameraPhase]||'正在连接摄像头…'):'';
   status.hidden=!starting;
   $('#enable-sound').hidden=(!running&&!starting)||audioReady;
   $<HTMLButtonElement>('#enable-sound').disabled=audioPending;
@@ -304,9 +333,9 @@ function describeError(error:unknown) {
   return `连接未完成：${error instanceof Error ? error.message : String(error)}。可以重试或先使用试听模式。`;
 }
 async function stop() {
-  ++generation; starting=false; running=false; cameraActive=false; handPresent=false; gestureGate=false; demo=false;
+  ++generation; manualInputOnly=false; starting=false; running=false; cameraActive=false; handPresent=false; gestureGate=false; demo=false;
   latestGesture=undefined;
-  microphoneWasConnected=false;cameraPhase='stopped';audioReady=false;audioPending=false;++audioAttempt;
+  microphoneWasConnected=false;cameraPhase='stopped';cameraDetail='';audioReady=false;audioPending=false;++audioAttempt;
   clearTimeout(startupHiddenTimer);
   gestureColor=.5;state.wristTone=.5;gestureHarmony={};
   state.active=false; tracker.stop(); updateAudio();
@@ -320,7 +349,7 @@ async function startAudio(token:number, useDemo:boolean):Promise<boolean> {
     // start() runs inside the initiating click; camera permission does not wait for it.
     const ready=audio.start({microphone:false});
     audio.setDemoModulatorEnabled(useDemo);
-    await Promise.race([ready,new Promise<never>((_,reject)=>{timer=window.setTimeout(()=>reject(new Error('浏览器尚未启用声音，请点击「启用声音」重试')),8000);})]);
+    await Promise.race([ready,new Promise<never>((_,reject)=>{timer=window.setTimeout(()=>reject(new Error('声音资源加载或启动超时，请点击「启用声音」重试')),20000);})]);
     if(token!==generation||attempt!==audioAttempt)return false;
     audioReady=true;audioPending=false;updateAudio();renderSession();return true;
   } catch(error) {
@@ -330,20 +359,22 @@ async function startAudio(token:number, useDemo:boolean):Promise<boolean> {
     renderSession();message(`声音未启动，摄像头可独立使用。${error instanceof Error?error.message:String(error)}`,true);return false;
   } finally {clearTimeout(timer);}
 }
-async function start(useDemo:boolean) {
+async function start(useDemo:boolean, microphoneTest=false) {
   if (starting) return;
+  const keepAudio=audioReady;
   const heldHarmony={...gestureHarmony};
   const token=++generation;
   starting=true;running=false;cameraActive=false;handPresent=false;gestureGate=false;
   latestGesture=undefined;
   gestureColor=.5;state.wristTone=.5;gestureHarmony=useDemo?heldHarmony:{};selectChord(selectedChord);
-  tracker.stop();cameraPhase='stopped';state.active=false;audioReady=false;updateAudio();
-  demo=useDemo;message('');
+  tracker.stop();cameraPhase='stopped';cameraDetail='';state.active=false;audioReady=keepAudio;updateAudio();
+  demo=useDemo;manualInputOnly=useDemo&&microphoneTest;message('');
   if(!useDemo){$('#field').classList.remove('abstract-view');$('#view-button').textContent='切换为共振场';$('#view-button').setAttribute('aria-pressed','false');}
-  // stop clears its old session synchronously; do not await browser audio closure
-  // before requesting the camera from the same user gesture.
-  void audio.stop();
-  const audioTask=startAudio(token,useDemo);
+  // Preserve an already-running microphone/audio session when switching control modes.
+  // A new audio session starts concurrently with the camera permission request.
+  if(!keepAudio)void audio.stop();
+  audio.setDemoModulatorEnabled(useDemo&&!microphoneTest);
+  const audioTask=keepAudio?Promise.resolve(true):startAudio(token,useDemo&&!microphoneTest);
   try {
     if(!useDemo) await tracker.start();
     else {state.expression=.65;await audioTask;}
@@ -351,7 +382,7 @@ async function start(useDemo:boolean) {
     running=true;starting=false;
     $('#engine-label').textContent='FAUST · AUDIOWORKLET';
     renderVoices();renderSession();
-    if(useDemo&&audioReady)message(state.mode==='vocoder'?'Vocoder 试听使用合成调制信号；连接麦克风后由歌声塑造和声。':'试听已开始。点击和弦与声部，或按住舞台拖动；空格静音。');
+    if(useDemo&&audioReady&&!microphoneTest)message(state.mode==='vocoder'?'Vocoder 试听使用合成调制信号；连接麦克风后由歌声塑造和声。':'试听已开始。点击和弦与声部，或按住舞台拖动；空格静音。');
     else if(!useDemo)message(state.mode==='vocoder'?'摄像头已开启。点击麦克风按钮连接人声，再用双手控制和弦。':'摄像头已开启。和弦手先伸食指，表情手张开并抬高。左腕四区切减／小／大／增，回中为大；右腕侧倾扫音色；看舞台下方的实时指示。');
     if(document.hidden)scheduleHiddenStop();
   } catch(error) {
@@ -366,23 +397,40 @@ function scheduleHiddenStop() {
 
 $('#start-button').addEventListener('click',()=> { if (running || starting) void stop(); else void start(false); });
 for(const selector of ['#camera-button','#camera-overlay-button'])$(selector).addEventListener('click',()=>{if(starting||cameraActive)void stop();else void start(false);});
-$('#enable-sound').addEventListener('click',()=>{if(!audioPending)void startAudio(generation,demo);});
+$('#enable-sound').addEventListener('click',()=>{if(!audioPending)void startAudio(generation,demo&&!manualInputOnly);});
 $('#demo-button').addEventListener('click',()=> { if (running && demo) void stop(); else void start(true); });
 let micConnecting=false;
+$('#mic-gain').addEventListener('input',event=>{state.microphoneGainDb=Number((event.target as HTMLInputElement).value);updateAudio();});
+$('#mic-test-button').addEventListener('click',async()=>{
+  if(micConnecting)return;
+  micConnecting=true;renderVocoderStatus();
+  let token=generation;
+  try{
+    if(starting){++generation;starting=false;tracker.stop();cameraActive=false;}
+    const task=start(true,true);token=generation;
+    await task;
+    if(token!==generation||!running||!audioReady)return;
+    audio.setDemoModulatorEnabled(false);
+    await audio.enableMicrophone();
+    if(token!==generation)return;
+    renderSession();updateAudio();message('固定和弦试音已开启：对麦克风唱一个长音，1–7切换和弦。点击开启摄像头可返回手势演奏。');
+  }catch(error){if(token===generation)message(describeError(error),true);}
+  finally{micConnecting=false;renderVocoderStatus();}
+});
 $('#mic-button').addEventListener('click',async()=> {
   if (micConnecting || starting) return;
   if (audio.microphoneEnabled) { message('麦克风已连接。点击「结束演奏」可断开所有设备。'); return; }
-  micConnecting=true; const token=generation;
+  micConnecting=true; let token=generation;
   try {
-    if (!running) await start(true);
-    if (!running) return;
-    const current=generation;
+    if (!running) {const task=start(true);token=generation;await task;}
+    if (token!==generation||!running) return;
+    const current=token;
     if(!audioReady){message('请先点击「启用声音」，再连接麦克风。');return;}
     await audio.enableMicrophone();
     if (current!==generation) return;
     renderSession(); message('麦克风已连接。切换到 Vocoder，用歌声塑造和弦；手动和弦与声部控制仍可使用。');
-  } catch(error) { if (running || token===generation) message(describeError(error),true); }
-  finally {micConnecting=false;}
+  } catch(error) { if (token===generation) message(describeError(error),true); }
+  finally {micConnecting=false;renderVocoderStatus();}
 });
 document.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(el=>el.addEventListener('click',()=> {
   state.mode=el.dataset.mode as SoundMode;
@@ -506,7 +554,8 @@ function animate(time:number) {
     }
     microphoneWasConnected=connected;
     visual.setLevel(metrics.outputLevel);
-    const level=running?Math.min(1,metrics.inputLevel*5):0;
+    const level=running||starting?metrics.inputLevel:0;
+    renderVocoderStatus(metrics);
     document.querySelectorAll<HTMLElement>('#input-meter i').forEach((el,i)=>el.classList.toggle('lit',i<level*20));
   }
   requestAnimationFrame(animate);

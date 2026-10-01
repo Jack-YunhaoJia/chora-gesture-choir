@@ -25,6 +25,8 @@ export interface PerformanceState {
   texture?: number;
   /** Independent wrist filter: 0 dark, 0.5 neutral, 1 bright. */
   wristTone?: number;
+  /** Microphone boost before analysis and the vocoder: 0–24 dB, default 12 dB. */
+  microphoneGainDb?: number;
   frequencies: [number, number, number, number];
   voices: VoiceMask;
   expression: number;
@@ -35,7 +37,18 @@ export interface PerformanceState {
   active: boolean;
 }
 export interface AudioMetrics {
+  /** Post-gain RMS meter: -60 dBFS maps to 0, 0 dBFS to 1. */
   inputLevel: number;
+  /** Post-gain RMS dBFS; silence is reported as the finite floor -90 dBFS. */
+  inputDb?: number;
+  /** Post-gain absolute peak; may exceed 1 inside Web Audio's float graph. */
+  inputPeak?: number;
+  /** Post-gain near/full-scale warning, not proof of hardware clipping. */
+  inputClipped?: boolean;
+  /** Capture signal before the user-controlled microphone boost. */
+  rawInputDb?: number;
+  rawInputPeak?: number;
+  rawInputClipped?: boolean;
   outputLevel: number;
   pitchHz: number | null;
 }

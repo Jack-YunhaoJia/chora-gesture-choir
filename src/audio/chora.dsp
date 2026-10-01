@@ -36,6 +36,9 @@ onset(i) = (gate(i) > gate(i)') | (rawFreq(i) != rawFreq(i)')
 drift(i) = 1 + (0.0009 + 0.0024 * texture) * os.osc(0.11 + 0.031 * i);
 choirEnvelope(i) = gate(i) : an.amp_follower_ud(0.62, 0.23);
 reedEnvelope(i) = gate(i) : an.amp_follower_ud(0.009, 0.065);
+// Microphone speech must return promptly after the gesture gate reopens.
+// Ambient articulation is independent: the choir still blooms and glass decays.
+vocoderEnvelope(i) = gate(i) : an.amp_follower_ud(0.016, 0.04);
 
 // MOON: a slow, continuously moving vowel pad. The detuned voice and formants
 // remain present throughout a held chord; this instrument has no struck layer.
@@ -98,18 +101,24 @@ syllableRise(x) = (fast > 0.012) & (fast > 1.6 * baseline) with {
 };
 syllableOnset(x) = rising & (1-rising') with { rising = syllableRise(x); };
 
-// Distinct excitation and articulation precede the shared 16-band analysis.
-// Moon retains slowly arriving choral drift; warm keeps an immediate, stable
-// reed; glass is struck both by performance changes and real syllable onsets.
-lunarCarrier(i) = choirEnvelope(i) *
+// All microphone carriers sustain while a voice is enabled. The input analysis
+// controls speech amplitude, so a continuous vowel must not exhaust its carrier.
+// Their spectra remain distinct: detuned choir, bright octave glass, pulse reed.
+lunarCarrier(i) = vocoderEnvelope(i) *
     (0.54 * os.sawtooth(freq(i) * drift(i))
     + 0.33 * os.sawtooth(freq(i) / drift(i)) + 0.20 * os.osc(freq(i)))
     : fi.lowpass(2, 2600 + brightness * 4200);
-crystalCarrier(i, x) = (gate(i) : smooth(0.004)) *
-    (1.65 * struck(i, trigger)
-    + 0.52 * glassPing(trigger) * os.sawtooth(freq(i)))
+// Faust's saw fundamental has the opposite sine phase; subtracting the sine
+// reinforces a stable low anchor instead of cancelling it under the wrist LPF.
+crystalSustain(i) = (0.46 * os.sawtooth(freq(i))
+    + (0.28 + 0.18 * texture) * os.sawtooth(freq(i) * 2)
+    - 0.24 * os.osc(freq(i)) + 0.08 * os.osc(freq(i) * 3))
+    : fi.lowpass(2, min(0.44 * ma.SR, 3000 + 4000 * brightness));
+crystalCarrier(i, x) = vocoderEnvelope(i) *
+    (crystalSustain(i) + 0.55 * struck(i, trigger)
+    + 0.16 * glassPing(trigger) * os.sawtooth(freq(i)))
     with { trigger = onset(i) | syllableOnset(x); };
-reedCarrier(i) = reedEnvelope(i) * reedCore(i);
+reedCarrier(i) = vocoderEnvelope(i) * reedCore(i);
 carrier(x) = 0.25 * sum(i, 4,
     (1.32 * moon * lunarCarrier(i) + 1.24 * glass * crystalCarrier(i, x) + 0.98 * warm * reedCarrier(i)));
 
@@ -117,8 +126,8 @@ band(i) = fi.bandpass(1, 80 * pow(100, float(i)/16), 80 * pow(100, float(i+1)/16
 bandColour(i) = moon * (0.91 + 0.30 * exp(0-pow((float(i)-7)/3, 2)))
     + glass * (0.70 + 0.75 * float(i)/15)
     + warm * (1.05 + 0.25 * float(i)/15);
-attack = 0.036 * moon + 0.002 * glass + 0.004 * warm;
-release = 0.21 * moon + 0.026 * glass + 0.046 * warm;
+attack = 0.012 * moon + 0.002 * glass + 0.004 * warm;
+release = 0.11 * moon + 0.026 * glass + 0.046 * warm;
 vocband(i, x) = (carrier(x) : band(i)) * bandColour(i)
     * (x : band(i) : an.amp_follower_ud(attack, release));
 vocode(x) = 6.4 * sum(i, 16, vocband(i, modulator(x)))

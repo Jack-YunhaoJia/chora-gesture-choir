@@ -2,19 +2,26 @@ import type { IFaustMonoWebAudioNode, LooseFaustDspFactory } from '@grame/faustw
 import type { AudioMetrics, PerformanceState } from '../types';
 import { soundPresetIndex } from './presets';
 
-type Session = {
+type MicrophoneGraph = {
+  source?: MediaStreamAudioSourceNode;
+  rawInput?: AnalyserNode;
+  microphoneGain?: GainNode;
+  input?: AnalyserNode;
+  stream?: MediaStream;
+};
+
+type Session = MicrophoneGraph & {
   context: AudioContext;
   abort: AbortController;
   ready: Promise<void>;
   dsp?: IFaustMonoWebAudioNode;
   output?: AnalyserNode;
-  input?: AnalyserNode;
   limiter?: DynamicsCompressorNode;
   silentInput?: ConstantSourceNode;
-  source?: MediaStreamAudioSourceNode;
-  stream?: MediaStream;
   micRequest?: Promise<void>;
+  microphoneGainDb?: number;
   inputData: Float32Array<ArrayBuffer>;
+  rawInputData: Float32Array<ArrayBuffer>;
   outputData: Float32Array<ArrayBuffer>;
   sent: Map<string, number>;
   usesMicrophone: boolean;
@@ -22,6 +29,7 @@ type Session = {
 };
 
 const clamp = (value: number, lo = 0, hi = 1) => Number.isFinite(value) ? Math.min(hi, Math.max(lo, value)) : lo;
+const microphoneGainDb = (value?: number) => Number.isFinite(value) ? clamp(value!, 0, 24) : 12;
 const cancelled = () => new DOMException('声音启动已取消', 'AbortError');
 
 /** A real Faust/WebAssembly instrument. No microphone signal is dry-monitored. */
@@ -55,6 +63,7 @@ export class AudioEngine {
       sampleRate: this.session?.context.sampleRate ?? null,
       contextState: this.session?.context.state ?? 'closed',
       microphone: this.microphoneEnabled,
+      microphoneGainDb: this.session?.microphoneGainDb ?? microphoneGainDb(this.state?.microphoneGainDb),
       demoModulator: this.demoModulatorEnabled,
       dryMonitor: false,
       bands: 16,
@@ -79,6 +88,7 @@ export class AudioEngine {
       abort: new AbortController(),
       ready: Promise.resolve(),
       inputData: new Float32Array(2048),
+      rawInputData: new Float32Array(2048),
       outputData: new Float32Array(1024),
       sent: new Map(),
       usesMicrophone: false,
@@ -178,23 +188,32 @@ export class AudioEngine {
         stream.getTracks().forEach(track => track.stop());
         throw cancelled();
       }
+      const candidate: MicrophoneGraph = { stream };
       try {
-        session.source?.disconnect();
-        session.input?.disconnect();
-        session.stream?.getTracks().forEach(track => track.stop());
-        const source = session.context.createMediaStreamSource(stream);
-        const input = session.context.createAnalyser();
+        const source = candidate.source = session.context.createMediaStreamSource(stream);
+        const rawInput = candidate.rawInput = session.context.createAnalyser();
+        rawInput.fftSize = session.rawInputData.length;
+        const gain = candidate.microphoneGain = session.context.createGain();
+        const gainDb = microphoneGainDb(this.state?.microphoneGainDb);
+        gain.gain.setValueAtTime(10 ** (gainDb / 20), session.context.currentTime);
+        const input = candidate.input = session.context.createAnalyser();
         input.fftSize = session.inputData.length;
-        source.connect(input);
+        source.connect(rawInput);
+        rawInput.connect(gain);
+        gain.connect(input);
         input.connect(session.dsp!);
-        session.source = source;
-        session.input = input;
-        session.stream = stream;
+        this.param(session, 'demo', 0);
+        // Commit only after every node is connected. Failed replacements leave
+        // the previous graph intact and release all partially-created nodes.
+        disconnectMicrophone(session);
+        Object.assign(session, candidate);
+        session.microphoneGainDb = gainDb;
         session.usesMicrophone = true;
         session.demoModulator = false;
-        this.param(session, 'demo', 0);
+        this.lastPitch = null;
+        this.lastPitchTime = 0;
       } catch (error) {
-        stream.getTracks().forEach(track => track.stop());
+        disconnectMicrophone(candidate);
         throw error;
       }
     })();
@@ -205,9 +224,11 @@ export class AudioEngine {
 
   update(state: PerformanceState): void {
     // Keep a snapshot: a caller may mutate its UI state while audio is loading.
-    this.state = { ...state, frequencies: [...state.frequencies], voices: [...state.voices] };
+    this.state = { ...state, microphoneGainDb: microphoneGainDb(state.microphoneGainDb), frequencies: [...state.frequencies], voices: [...state.voices] };
     const session = this.session;
-    if (!session?.dsp) return;
+    if (!session) return;
+    this.updateMicrophoneGain(session, this.state.microphoneGainDb!);
+    if (!session.dsp) return;
     state.frequencies.forEach((freq, i) => this.param(session, `freq${i}`, clamp(freq, 45, 1800)));
     state.voices.forEach((voice, i) => this.param(session, `voice${i}`, state.active && voice ? 1 : 0));
     this.param(session, 'expression', clamp(state.expression));
@@ -218,6 +239,14 @@ export class AudioEngine {
     this.param(session, 'texture', clamp(state.texture ?? 0.5));
     this.param(session, 'master', state.active ? clamp(state.volume) * 0.8 : 0);
     this.param(session, 'vocoder', state.mode === 'vocoder' ? 1 : 0);
+  }
+
+  private updateMicrophoneGain(session: Session, gainDb: number): void {
+    if (!session.microphoneGain || session.microphoneGainDb === gainDb) return;
+    const now = session.context.currentTime;
+    session.microphoneGain.gain.cancelScheduledValues(now);
+    session.microphoneGain.gain.setTargetAtTime(10 ** (gainDb / 20), now, 0.03);
+    session.microphoneGainDb = gainDb;
   }
 
   /** Explicit repeated chord attacks; ordinary tracking frames never retrigger. */
@@ -235,18 +264,32 @@ export class AudioEngine {
 
   metrics(): AudioMetrics {
     const session = this.session;
-    if (!session?.output) return { inputLevel: 0, outputLevel: 0, pitchHz: null };
+    if (!session?.output) return silentMetrics(0);
     session.output.getFloatTimeDomainData(session.outputData);
     const outputLevel = clamp(rms(session.outputData) * 4);
-    if (!session.input || !this.microphoneEnabled) return { inputLevel: 0, outputLevel, pitchHz: null };
+    if (!session.input || !this.microphoneEnabled) {
+      this.lastPitch = null;
+      return silentMetrics(outputLevel);
+    }
     session.input.getFloatTimeDomainData(session.inputData);
-    const level = rms(session.inputData);
+    const input = inputStats(session.inputData);
+    let raw: ReturnType<typeof inputStats> | undefined;
+    if (session.rawInput && session.rawInputData) {
+      session.rawInput.getFloatTimeDomainData(session.rawInputData);
+      raw = inputStats(session.rawInputData);
+    }
     const now = performance.now();
     if (now - this.lastPitchTime > 140) {
       this.lastPitchTime = now;
-      this.lastPitch = level > 0.009 ? estimatePitch(session.inputData, session.context.sampleRate) : null;
+      this.lastPitch = input.level > 0.009 ? estimatePitch(session.inputData, session.context.sampleRate) : null;
     }
-    return { inputLevel: clamp(level * 7), outputLevel, pitchHz: this.lastPitch };
+    if (input.level === 0) this.lastPitch = null;
+    return {
+      inputLevel: clamp((input.db + 60) / 60), inputDb: input.db,
+      inputPeak: input.peak, inputClipped: input.clipped,
+      ...(raw ? { rawInputDb: raw.db, rawInputPeak: raw.peak, rawInputClipped: raw.clipped } : {}),
+      outputLevel, pitchHz: this.lastPitch,
+    };
   }
 
   async stop(): Promise<void> {
@@ -259,9 +302,7 @@ export class AudioEngine {
 
   private async dispose(session: Session): Promise<void> {
     session.abort.abort();
-    session.stream?.getTracks().forEach(track => track.stop());
-    session.source?.disconnect();
-    session.input?.disconnect();
+    disconnectMicrophone(session);
     session.silentInput?.stop();
     session.silentInput?.disconnect();
     session.dsp?.stop();
@@ -271,6 +312,34 @@ export class AudioEngine {
     session.output?.disconnect();
     if (session.context.state !== 'closed') await session.context.close().catch(() => {});
   }
+}
+
+function disconnectMicrophone(graph: MicrophoneGraph): void {
+  for (const node of [graph.source, graph.rawInput, graph.microphoneGain, graph.input]) {
+    try { node?.disconnect(); } catch { /* Continue releasing the other nodes. */ }
+  }
+  graph.stream?.getTracks().forEach(track => {
+    try { track.stop(); } catch { /* A detached device must not prevent cleanup. */ }
+  });
+}
+
+function silentMetrics(outputLevel: number): AudioMetrics {
+  return {
+    inputLevel: 0, inputDb: -90, inputPeak: 0, inputClipped: false,
+    rawInputDb: -90, rawInputPeak: 0, rawInputClipped: false,
+    outputLevel, pitchHz: null,
+  };
+}
+
+function inputStats(buffer: Float32Array): { level: number; db: number; peak: number; clipped: boolean } {
+  let energy = 0, peak = 0;
+  for (const sample of buffer) {
+    if (!Number.isFinite(sample)) continue;
+    energy += sample * sample;
+    peak = Math.max(peak, Math.abs(sample));
+  }
+  const level = Math.sqrt(energy / Math.max(1, buffer.length));
+  return { level, db: Math.max(-90, 20 * Math.log10(Math.max(level, 10 ** (-90 / 20)))), peak, clipped: peak >= 0.99 };
 }
 
 function rms(buffer: Float32Array): number {
